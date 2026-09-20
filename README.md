@@ -1,6 +1,6 @@
-# Volt - Smart Home Energy Monitoring
+# Volt-v1 - Smart Home Energy Monitoring
 
-Volt is a modern Android application designed for real-time monitoring and control of home electrical appliances. It provides users with deep insights into their energy consumption, voltage fluctuations, and allows for remote device management.
+Volt-v1 is a modern Android application designed for real-time monitoring and control of home electrical appliances. It provides users with deep insights into their energy consumption, voltage fluctuations, and allows for remote device management.
 
 ## 🚀 Features
 
@@ -26,13 +26,13 @@ Volt is a modern Android application designed for real-time monitoring and contr
 
 ## 📥 Download
 
-You can download the latest version of the Volt APK from the [Releases](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/releases) page.
+You can download the latest version of the Volt APK from the [Releases](https://github.com/YOUR_USERNAME/Volt-v1/releases) page.
 
 ## 🏗️ Getting Started
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+    git clone https://github.com/YOUR_USERNAME/Volt-v1.git
     ```
 2.  **Open in Android Studio**:
     Import the project as a Gradle project.
