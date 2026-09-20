@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#060E0D"
+    android:scrollbars="none"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="140dp"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="50dp">
+
+        <TextView
+            android:id="@+id/tvRelayTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Relay Control"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvRelaySub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Toggle appliances · Watch total watts change"
+            android:textColor="#4A7070"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvRelayTitle" />
+
+        <!-- Total Watts Card -->
+        <FrameLayout
+            android:id="@+id/cardTotalWatts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/bg_glass_card"
+            app:layout_constraintTop_toBottomOf="@id/tvRelaySub">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="24dp">
+
+                <ImageView
+                    android:id="@+id/ivEye"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/circle_inner"
+                    android:background="@drawable/bg_glass_nav"
+                    android:padding="8dp"
+                    android:contentDescription="Icon"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toEndOf="@id/ivEye"
+                    app:layout_constraintEnd_toStartOf="@id/tvLiveWatts"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Watch Total Watts"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Toggle a relay OFF — the whole-home reading below drops instantly."
+                        android:textColor="#4A7070"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvLiveWatts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3.2kW"
+                    android:textColor="#00E5CC"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvAppTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="APPLIANCES"
+            android:textColor="#4A7070"
+            android:textSize="12sp"
+            android:letterSpacing="0.1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardTotalWatts" />
+
+        <GridLayout
+            android:id="@+id/gridAppliances"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:columnCount="2"
+            app:layout_constraintTop_toBottomOf="@id/tvAppTitle">
+
+            <!-- Relay 1 -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="180dp"
+                android:layout_columnWeight="1"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_glass_card">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="16dp">
+                    <ImageView android:id="@+id/ivRelay1" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_ac" android:contentDescription="Icon" app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:id="@+id/tvRelay1Title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Relay 1" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold" android:fontFamily="serif" app:layout_constraintTop_toBottomOf="@id/ivRelay1" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Room Area" android:textColor="#4A7070" android:textSize="12sp" app:layout_constraintTop_toBottomOf="@id/tvRelay1Title" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:id="@+id/tvStatusRelay1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ON" android:textColor="#00E5CC" android:textSize="12sp" android:textStyle="bold" android:background="@drawable/bg_glass_nav" android:paddingHorizontal="8dp" android:paddingVertical="4dp" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchRelay1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" app:thumbTint="#FFFFFF" app:trackTint="#00E5CC" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </FrameLayout>
+
+            <!-- Relay 2 -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="180dp"
+                android:layout_columnWeight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_glass_card">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="16dp">
+                    <ImageView android:id="@+id/ivRelay2" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_humidity" android:contentDescription="Icon" app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:id="@+id/tvRelay2Title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Relay 2" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold" android:fontFamily="serif" app:layout_constraintTop_toBottomOf="@id/ivRelay2" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Room Area" android:textColor="#4A7070" android:textSize="12sp" app:layout_constraintTop_toBottomOf="@id/tvRelay2Title" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:id="@+id/tvStatusRelay2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ON" android:textColor="#00E5CC" android:textSize="12sp" android:textStyle="bold" android:background="@drawable/bg_glass_nav" android:paddingHorizontal="8dp" android:paddingVertical="4dp" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchRelay2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" app:thumbTint="#FFFFFF" app:trackTint="#00E5CC" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </FrameLayout>
+
+            <!-- Relay 3 -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="180dp"
+                android:layout_columnWeight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_glass_card">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="16dp">
+                    <ImageView android:id="@+id/ivRelay3" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_light" android:contentDescription="Icon" app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:id="@+id/tvRelay3Title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Relay 3" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold" android:fontFamily="serif" app:layout_constraintTop_toBottomOf="@id/ivRelay3" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Room Area" android:textColor="#4A7070" android:textSize="12sp" app:layout_constraintTop_toBottomOf="@id/tvRelay3Title" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:id="@+id/tvStatusRelay3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ON" android:textColor="#00E5CC" android:textSize="12sp" android:textStyle="bold" android:background="@drawable/bg_glass_nav" android:paddingHorizontal="8dp" android:paddingVertical="4dp" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchRelay3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" app:thumbTint="#FFFFFF" app:trackTint="#00E5CC" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </FrameLayout>
+
+            <!-- Relay 4 -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="180dp"
+                android:layout_columnWeight="1"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_glass_card">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="16dp">
+                    <ImageView android:id="@+id/ivRelay4" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_bolt" android:contentDescription="Icon" app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:id="@+id/tvRelay4Title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Relay 4" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold" android:fontFamily="serif" app:layout_constraintTop_toBottomOf="@id/ivRelay4" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Room Area" android:textColor="#4A7070" android:textSize="12sp" app:layout_constraintTop_toBottomOf="@id/tvRelay4Title" app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView android:id="@+id/tvStatusRelay4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="OFF" android:textColor="#4A7070" android:textSize="12sp" android:textStyle="bold" android:background="@drawable/bg_glass_nav" android:paddingHorizontal="8dp" android:paddingVertical="4dp" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchRelay4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="false" app:thumbTint="#FFFFFF" app:trackTint="#00E5CC" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </FrameLayout>
+
+        </GridLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

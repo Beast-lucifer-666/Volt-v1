@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background= "#060E0D"
+    android:fillViewport="true"
+    android:scrollbars="none">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="28dp"
+        android:paddingTop="56dp"
+        android:paddingBottom="40dp">
+
+        <!-- ── LOGO SECTION ── -->
+
+        <!-- Outer ambient glow (largest, most transparent) -->
+        <View
+            android:id="@+id/glowOuter"
+            android:layout_width="258dp"
+            android:layout_height="252dp"
+            android:background="@drawable/glow_outer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Middle glow layer -->
+        <View
+            android:id="@+id/glowMiddle"
+            android:layout_width="196dp"
+            android:layout_height="196dp"
+            android:background="@drawable/glow_middle"
+            app:layout_constraintTop_toTopOf="@id/glowOuter"
+            app:layout_constraintBottom_toBottomOf="@id/glowOuter"
+            app:layout_constraintStart_toStartOf="@id/glowOuter"
+            app:layout_constraintEnd_toEndOf="@id/glowOuter"/>
+
+        <!-- Rotating gradient ring -->
+        <ImageView
+            android:id="@+id/logoRing"
+            android:layout_width="168dp"
+            android:layout_height="168dp"
+            android:src="@drawable/ring_gradient"
+            android:contentDescription="@null"
+            app:layout_constraintTop_toTopOf="@id/glowOuter"
+            app:layout_constraintBottom_toBottomOf="@id/glowOuter"
+            app:layout_constraintStart_toStartOf="@id/glowOuter"
+            app:layout_constraintEnd_toEndOf="@id/glowOuter"/>
+
+        <!-- Dark inner circle (mask behind bolt) -->
+        <View
+            android:id="@+id/innerCircle"
+            android:layout_width="136dp"
+            android:layout_height="136dp"
+            android:background="@drawable/circle_inner"
+            app:layout_constraintTop_toTopOf="@id/logoRing"
+            app:layout_constraintBottom_toBottomOf="@id/logoRing"
+            app:layout_constraintStart_toStartOf="@id/logoRing"
+            app:layout_constraintEnd_toEndOf="@id/logoRing"/>
+
+        <!-- Lightning bolt icon (static, centered) -->
+        <ImageView
+            android:id="@+id/boltIcon"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:src="@drawable/ic_bolt"
+            android:contentDescription="@null"
+            app:layout_constraintTop_toTopOf="@id/innerCircle"
+            app:layout_constraintBottom_toBottomOf="@id/innerCircle"
+            app:layout_constraintStart_toStartOf="@id/innerCircle"
+            app:layout_constraintEnd_toEndOf="@id/innerCircle"/>
+
+        <!-- ── APP NAME ── -->
+
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="VOLT"
+            android:textSize="52sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.12"
+            android:textColor="#00E5CC"
+            android:shadowColor="#3300E5CC"
+            android:shadowRadius="20"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            app:layout_constraintTop_toBottomOf="@id/glowOuter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/tvTagline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="SMART ENERGY · IOT"
+            android:textSize="12sp"
+            android:letterSpacing="0.22"
+            android:textColor="#7AABAA"
+            android:fontFamily="sans-serif-medium"
+            app:layout_constraintTop_toBottomOf="@id/tvAppName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- ── INPUT FIELDS ── -->
+
+        <!-- Email Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/containerEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
+            android:hint="Email"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:startIconDrawable="@drawable/ic_email"
+            app:startIconTint="#6B8F8E"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="#1ED5C0"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            app:boxBackgroundColor="#111D1C"
+            app:layout_constraintTop_toBottomOf="@id/tvTagline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="student@college.edu"
+                android:textColor="#C8E6E5"
+                android:textColorHint="#4A7070"
+                android:textSize="15sp"
+                android:inputType="textEmailAddress"
+                android:fontFamily="sans-serif"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- Password Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/containerPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:hint="Password"
+            app:boxBackgroundColor="#111D1C"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusTopStart="14dp"
+            app:endIconMode="password_toggle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/containerEmail"
+            app:startIconDrawable="@drawable/ic_lock"
+            app:startIconTint="#6B8F8E">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:hint="password"
+                android:inputType="textPassword"
+                android:textColor="#C8E6E5"
+                android:textColorHint="#4A7070"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tvForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Forgot Password?"
+            android:textColor="#00E5CC"
+            android:textSize="13sp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintTop_toBottomOf="@id/containerPassword"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- ── SIGN IN BUTTON ── -->
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSignIn"
+            android:layout_width="0dp"
+            android:layout_height="58dp"
+            android:layout_marginTop="20dp"
+            android:text="SIGN IN →"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.10"
+            android:textColor="#0A1A14"
+            android:fontFamily="sans-serif-black"
+            android:background="@drawable/bg_button_signin"
+            app:backgroundTint="@null"
+            android:elevation="8dp"
+            android:stateListAnimator="@null"
+            app:layout_constraintTop_toBottomOf="@id/tvForgotPassword"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- ── REGISTER LINK ── -->
+
+        <TextView
+            android:id="@+id/tvRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textSize="13sp"
+            android:textColor="#4A7070"
+            android:fontFamily="sans-serif"
+            app:layout_constraintTop_toBottomOf="@id/btnSignIn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

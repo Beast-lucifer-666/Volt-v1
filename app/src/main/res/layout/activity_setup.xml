@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#060E0D"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/tvSetupTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quick Setup"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/tvSetupSub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Configure your home energy targets"
+            android:textColor="#4A7070"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/tvSetupTitle"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvDeviceIdLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Device ID (Hardware ID)"
+            android:textColor="#00E5CC"
+            android:textSize="12sp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/tvSetupSub"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <EditText
+            android:id="@+id/etDeviceId"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_glass_card"
+            android:hint="e.g. simulator_01"
+            android:inputType="text"
+            android:padding="16dp"
+            android:textColor="#00E5CC"
+            android:textColorHint="#4A7070"
+            app:layout_constraintTop_toBottomOf="@id/tvDeviceIdLabel" />
+
+        <!-- Relays Configuration -->
+        <LinearLayout
+            android:id="@+id/llRelays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/etDeviceId">
+
+            <TextView android:text="Relay 1" android:textColor="#00E5CC" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="4dp" android:textSize="12sp"/>
+            <Spinner android:id="@+id/spinnerRelay1" android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_glass_card" android:padding="8dp" android:layout_marginBottom="16dp"/>
+
+            <TextView android:text="Relay 2" android:textColor="#00E5CC" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="4dp" android:textSize="12sp"/>
+            <Spinner android:id="@+id/spinnerRelay2" android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_glass_card" android:padding="8dp" android:layout_marginBottom="16dp"/>
+
+            <TextView android:text="Relay 3" android:textColor="#00E5CC" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="4dp" android:textSize="12sp"/>
+            <Spinner android:id="@+id/spinnerRelay3" android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_glass_card" android:padding="8dp" android:layout_marginBottom="16dp"/>
+
+            <TextView android:text="Relay 4" android:textColor="#00E5CC" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="4dp" android:textSize="12sp"/>
+            <Spinner android:id="@+id/spinnerRelay4" android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_glass_card" android:padding="8dp" android:layout_marginBottom="24dp"/>
+        </LinearLayout>
+
+        <!-- Monthly Budget Section -->
+        <TextView
+            android:id="@+id/tvBudgetTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monthly Budget Target"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/llRelays"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/tvBudgetSub"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="We'll use this to predict your bill and track progress."
+            android:textColor="#4A7070"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/tvBudgetTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <EditText
+            android:id="@+id/etMonthlyBudget"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_glass_card"
+            android:hint="e.g. 2500"
+            android:inputType="number"
+            android:padding="16dp"
+            android:textColor="#00E5CC"
+            android:textColorHint="#4A7070"
+            app:layout_constraintTop_toBottomOf="@id/tvBudgetSub" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₹"
+            android:textColor="#00E5CC"
+            android:textSize="18sp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintTop_toTopOf="@id/etMonthlyBudget"
+            app:layout_constraintBottom_toBottomOf="@id/etMonthlyBudget"
+            app:layout_constraintEnd_toEndOf="@id/etMonthlyBudget"/>
+
+        <Button
+            android:id="@+id/btnCompleteSetup"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="40dp"
+            android:text="Finish Setup"
+            android:backgroundTint="#00E5CC"
+            android:textColor="#060E0D"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/etMonthlyBudget"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="24dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

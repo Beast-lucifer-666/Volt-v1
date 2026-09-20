@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_min_height">780dp</dimen>
+    <dimen name="input_corner_radius">14dp</dimen>
+    <dimen name="button_corner_radius">14dp</dimen>
+    <dimen name="logo_ring_size">168dp</dimen>
+    <dimen name="logo_glow_outer">230dp</dimen>
+    <dimen name="logo_inner_circle">136dp</dimen>
+    <dimen name="bolt_icon_size">52dp</dimen>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Lightning bolt icon with orange→red gradient fill,
+    matching the Volt brand icon in the mockup.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="52dp"
+    android:height="52dp"
+    android:viewportWidth="52"
+    android:viewportHeight="52">
+
+    <path
+        android:pathData="M29.5,4 L14,28 L24,28 L22.5,48 L38,24 L28,24 Z"
+        android:strokeWidth="0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="26"
+                android:startY="4"
+                android:endX="26"
+                android:endY="48">
+                <item android:offset="0" android:color="#FF6B1A"/>
+                <item android:offset="1" android:color="#CC1A00"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+</vector>

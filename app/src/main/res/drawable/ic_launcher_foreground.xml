@@ -1,0 +1,31 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer Glow for Bolt -->
+    <path
+        android:pathData="M54,20 L35,50 L47,50 L45,80 L64,50 L52,50 Z"
+        android:strokeWidth="4"
+        android:strokeColor="#3300E5CC"/>
+
+    <!-- The Lightning Bolt -->
+    <path
+        android:pathData="M54,20 L35,50 L47,50 L45,80 L64,50 L52,50 Z"
+        android:strokeWidth="0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="54"
+                android:startY="20"
+                android:endX="45"
+                android:endY="80">
+                <item android:offset="0" android:color="#00E5CC"/>
+                <item android:offset="1" android:color="#0066FF"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+</vector>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Sweep (conic) gradient ring — rotates via ObjectAnimator in Activity.
+    Colors: teal (#00E5CC) → blue (#0066FF) → teal
+    innerRadius + thickness define the stroke width of the ring.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="ring"
+    android:innerRadiusRatio="2.8"
+    android:thicknessRatio="10"
+    android:useLevel="false">
+
+    <gradient
+        android:type="sweep"
+        android:startColor="#00E5CC"
+        android:centerColor="#0077FF"
+        android:endColor="#00E5CC"
+        android:useLevel="false"/>
+
+</shape>

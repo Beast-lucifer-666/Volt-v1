@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="scale_options">
+        <item>1 min</item>
+        <item>3 mins</item>
+        <item>5 mins</item>
+        <item>10 mins</item>
+    </string-array>
+</resources>

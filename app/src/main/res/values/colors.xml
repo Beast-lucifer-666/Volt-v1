@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand -->
+    <color name="volt_teal">#00E5CC</color>
+    <color name="volt_blue">#0066FF</color>
+    <color name="volt_orange">#FF6B1A</color>
+    <color name="volt_red">#CC1A00</color>
+
+    <!-- Backgrounds -->
+    <color name="bg_dark">#060E0D</color>
+    <color name="bg_card">#111D1C</color>
+    <color name="bg_circle_inner">#121E1C</color>
+
+    <!-- Text -->
+    <color name="text_primary">#C8E6E5</color>
+    <color name="text_hint">#4A7070</color>
+    <color name="text_subtitle">#7AABAA</color>
+    <color name="text_body">#4A7070</color>
+
+    <!-- Borders -->
+    <color name="border_input">#1E3533</color>
+
+    <!-- Analytics Charts -->
+    <color name="chart_purple">#B455FF</color>
+    <color name="chart_blue">#4488FF</color>
+    <color name="chart_red">#FF4444</color>
+    <color name="gold_amber">#FFB300</color>
+    <color name="green_co2">#00E676</color>
+    <color name="bar_teal_start">#00B4D8</color>
+    <color name="bar_teal_end">#00E5CC</color>
+    <color name="bar_green_start">#00C853</color>
+    <color name="bar_green_end">#00E5CC</color>
+    <color name="bar_orange_start">#FF6B1A</color>
+    <color name="bar_orange_end">#FFB300</color>
+</resources>

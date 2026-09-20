@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginBottom="12dp">
+
+    <TextView
+        android:id="@+id/tvUsageLabel"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:textColor="#4A7070"
+        android:textSize="12sp"
+        android:text="12-6 AM" />
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="8dp"
+        android:layout_weight="1"
+        android:background="#1AFFFFFF">
+
+        <View
+            android:id="@+id/usageBarFill"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="#00E5CC" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvUsageValue"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:gravity="end"
+        android:text="0.0" />
+
+</LinearLayout>

@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark"
+    android:fillViewport="true"
+    android:scrollbars="none">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:paddingBottom="120dp">
+
+        <!-- Header -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Analytics"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/llTopControls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_glass_card"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TIME SCALE"
+                    android:textColor="@color/text_body"
+                    android:textSize="10sp"
+                    android:letterSpacing="0.1"/>
+                <Spinner
+                    android:id="@+id/spinnerScale"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#FFFFFF" />
+            </LinearLayout>
+
+            <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/btnPrint"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PRINT"
+                android:textSize="12sp"
+                app:icon="@drawable/ic_email"
+                android:backgroundTint="#1AFFFFFF"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/llTopControls"
+            app:layout_constraintStart_toStartOf="parent">
+            <View
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="#00E676"
+                android:layout_marginEnd="8dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Connected"
+                android:textColor="#00E676"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Main Real-time Chart -->
+        <FrameLayout
+            android:id="@+id/realtimeChartContainer"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="16dp"
+            android:background="#0DFFFFFF"
+            app:layout_constraintTop_toBottomOf="@id/llStatus" />
+
+        <!-- 6 Stats Grid -->
+        <GridLayout
+            android:id="@+id/glMainStats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:columnCount="2"
+            app:layout_constraintTop_toBottomOf="@id/realtimeChartContainer">
+
+            <LinearLayout style="@style/AnalyticsStatCard" android:layout_columnWeight="1">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Voltage" android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:id="@+id/tvVoltageVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="221.7 V" android:textColor="#00E676" android:textSize="20sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout style="@style/AnalyticsStatCard" android:layout_columnWeight="1">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Current" android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:id="@+id/tvCurrentVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3.69 A" android:textColor="#4488FF" android:textSize="20sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout style="@style/AnalyticsStatCard" android:layout_columnWeight="1">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Active Power" android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:id="@+id/tvActivePowerVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1002.0 W" android:textColor="#FFB300" android:textSize="20sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout style="@style/AnalyticsStatCard" android:layout_columnWeight="1">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Active Energy" android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:id="@+id/tvActiveEnergyVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.014 kWh" android:textColor="#FF5252" android:textSize="20sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout style="@style/AnalyticsStatCard" android:layout_columnWeight="1">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Frequency" android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:id="@+id/tvFrequencyVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="49.84 Hz" android:textColor="#00E5CC" android:textSize="20sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout style="@style/AnalyticsStatCard" android:layout_columnWeight="1">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Power Factor" android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:id="@+id/tvPowerFactorVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.95" android:textColor="#B455FF" android:textSize="20sp" android:textStyle="bold"/>
+            </LinearLayout>
+        </GridLayout>
+
+        <!-- Period Selection -->
+        <LinearLayout
+            android:id="@+id/llPeriods"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/glMainStats">
+            <TextView android:id="@+id/btnDay" style="@style/PeriodButton" android:text="Day" android:background="@drawable/bg_period_active" android:textColor="#FFFFFF" />
+            <TextView android:id="@+id/btnWeek" style="@style/PeriodButton" android:text="Week" android:background="@drawable/bg_period_inactive" />
+            <TextView android:id="@+id/btnMonth" style="@style/PeriodButton" android:text="Month" android:background="@drawable/bg_period_inactive" />
+            <TextView android:id="@+id/btnYear" style="@style/PeriodButton" android:text="Year" android:background="@drawable/bg_period_inactive" />
+        </LinearLayout>
+
+        <!-- Total kWh Card -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cardTotalKwh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_glass_card"
+            android:padding="20dp"
+            app:layout_constraintTop_toBottomOf="@id/llPeriods">
+
+            <TextView
+                android:id="@+id/tvTotalKwhLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total kWh"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTotalKwhSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Whole home · This week"
+                android:textColor="@color/text_body"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTotalKwhLabel" />
+
+            <TextView
+                android:id="@+id/tvTotalKwhValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="18.4"
+                android:textColor="@color/volt_teal"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="kWh this week"
+                android:textColor="@color/text_body"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTotalKwhValue" />
+
+            <FrameLayout
+                android:id="@+id/weeklyChartContainer"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/tvTotalKwhLabel" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Stats Row -->
+        <LinearLayout
+            android:id="@+id/llStatsRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/cardTotalKwh">
+            <LinearLayout style="@style/AnalyticsStatCard">
+                <TextView android:id="@+id/tvKwhTodayVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="18.4" android:textColor="@color/volt_teal" android:textSize="20sp" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="kWh Today" android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:id="@+id/tvVsAvg" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="↓ 8% vs avg" android:textColor="@color/volt_teal" android:textSize="10sp" android:layout_marginTop="4dp"/>
+            </LinearLayout>
+            <LinearLayout style="@style/AnalyticsStatCard">
+                <TextView android:id="@+id/tvBillEstVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₹1,840" android:textColor="@color/gold_amber" android:textSize="20sp" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bill Est." android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="↑ On track" android:textColor="@color/volt_teal" android:textSize="10sp" android:layout_marginTop="4dp"/>
+            </LinearLayout>
+            <LinearLayout style="@style/AnalyticsStatCard">
+                <TextView android:id="@+id/tvCo2Val" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2.1T" android:textColor="@color/chart_purple" android:textSize="20sp" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CO₂ Saved" android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="↑ 8.5%" android:textColor="@color/volt_teal" android:textSize="10sp" android:layout_marginTop="4dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Usage by Time -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cardUsage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_glass_card"
+            android:padding="20dp"
+            app:layout_constraintTop_toBottomOf="@id/llStatsRow">
+            <TextView
+                android:id="@+id/tvUsageTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Usage by Time"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Today - kWh"
+                android:textColor="@color/text_body"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/tvUsageTitle">
+                <include android:id="@+id/usageBar0" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar1" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar2" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar3" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar4" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar5" layout="@layout/item_usage_bar" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Predicted Bill -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cardBill"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_glass_card"
+            android:padding="20dp"
+            app:layout_constraintTop_toBottomOf="@id/cardUsage">
+            <TextView
+                android:id="@+id/tvPredictedTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Predicted Bill"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/tvPredictedSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End of March 2024 - ₹9/unit"
+                android:textColor="@color/text_body"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvPredictedTitle" />
+            <TextView
+                android:id="@+id/tvPredictedBillVal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₹1,840"
+                android:textColor="@color/gold_amber"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <ProgressBar
+                android:id="@+id/billProgressBar"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="24dp"
+                android:progress="32"
+                android:progressDrawable="@drawable/bg_bill_progress"
+                app:layout_constraintTop_toBottomOf="@id/tvPredictedSubtitle" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/billProgressBar">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Mar 1" android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:id="@+id/tvBillToday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Today · Day 10" android:textColor="@color/text_body" android:textSize="10sp" android:gravity="center"/>
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Mar 31" android:textColor="@color/text_body" android:textSize="10sp" android:gravity="end"/>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

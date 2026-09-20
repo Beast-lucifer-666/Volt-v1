@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Infinite smooth clockwise rotation — apply to the logoRing ImageView.
+    In Activity: Animation anim = AnimationUtils.loadAnimation(this, R.anim.rotate_ring);
+                 logoRing.startAnimation(anim);
+-->
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromDegrees="0"
+    android:toDegrees="360"
+    android:pivotX="50%"
+    android:pivotY="50%"
+    android:duration="4000"
+    android:interpolator="@android:anim/linear_interpolator"
+    android:repeatCount="infinite"
+    android:repeatMode="restart"/>

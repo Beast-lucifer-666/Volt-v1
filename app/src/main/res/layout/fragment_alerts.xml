@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#060E0D"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="50dp"
+        android:paddingBottom="100dp">
+
+        <TextView
+            android:id="@+id/tvAlertsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif"
+            android:text="Alerts"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvAlertsSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 need your attention"
+            android:textColor="#4A7070"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvAlertsTitle" />
+
+        <TextView
+            android:id="@+id/tvActiveBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_glass_card"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="0 Active"
+            android:textColor="#FF5252"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvAlertsTitle" />
+
+        <TextView
+            android:id="@+id/tvSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:letterSpacing="0.1"
+            android:text="LIVE SENSOR STATUS"
+            android:textColor="#4A7070"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvAlertsSummary" />
+
+        <GridLayout
+            android:id="@+id/gridSensors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:columnCount="2"
+            app:layout_constraintTop_toBottomOf="@id/tvSensorLabel">
+
+            <!-- Temperature -->
+            <LinearLayout style="@style/StatBox" android:layout_marginEnd="8dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_ac" app:tint="#FF5252" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Temperature" android:textColor="#4A7070" android:textSize="12sp" />
+                <TextView android:id="@+id/tvAlertTemp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28.4°C" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#1A00E5CC" android:paddingHorizontal="8dp" android:paddingVertical="2dp" android:text="NORMAL" android:textColor="#00E5CC" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Humidity -->
+            <LinearLayout style="@style/StatBox" android:layout_marginStart="8dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_humidity" app:tint="#448AFF" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Humidity" android:textColor="#4A7070" android:textSize="12sp" />
+                <TextView android:id="@+id/tvAlertHumidity" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="62%" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#1A00E5CC" android:paddingHorizontal="8dp" android:paddingVertical="2dp" android:text="NORMAL" android:textColor="#00E5CC" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Voltage -->
+            <LinearLayout style="@style/StatBox" android:layout_marginTop="16dp" android:layout_marginEnd="8dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_bolt" app:tint="#00E5CC" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Voltage" android:textColor="#4A7070" android:textSize="12sp" />
+                <TextView android:id="@+id/tvAlertVoltage" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="230 V" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" />
+                <TextView android:id="@+id/tvVoltageStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#1A00E5CC" android:paddingHorizontal="8dp" android:paddingVertical="2dp" android:text="SAFE" android:textColor="#00E5CC" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Current -->
+            <LinearLayout style="@style/StatBox" android:layout_marginTop="16dp" android:layout_marginStart="8dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_bolt" app:tint="#FFC107" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Current" android:textColor="#4A7070" android:textSize="12sp" />
+                <TextView android:id="@+id/tvAlertCurrent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="13.8 A" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" />
+                <TextView android:id="@+id/tvCurrentStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#1A00E5CC" android:paddingHorizontal="8dp" android:paddingVertical="2dp" android:text="STABLE" android:textColor="#00E5CC" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+        </GridLayout>
+
+        <TextView
+            android:id="@+id/tvCriticalLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:letterSpacing="0.1"
+            android:text="CRITICAL"
+            android:textColor="#4A7070"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/gridSensors" />
+
+        <LinearLayout
+            android:id="@+id/llCriticalAlerts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/tvCriticalLabel" />
+
+        <TextView
+            android:id="@+id/tvWarningLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:letterSpacing="0.1"
+            android:text="WARNINGS"
+            android:textColor="#4A7070"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llCriticalAlerts" />
+
+        <LinearLayout
+            android:id="@+id/llWarningAlerts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/tvWarningLabel" />
+
+        <TextView
+            android:id="@+id/tvInfoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:letterSpacing="0.1"
+            android:text="INFO"
+            android:textColor="#4A7070"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llWarningAlerts" />
+
+        <LinearLayout
+            android:id="@+id/llInfoAlerts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/tvInfoLabel" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

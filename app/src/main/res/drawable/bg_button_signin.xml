@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Teal→blue gradient pill button -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:type="linear"
+        android:angle="0"
+        android:startColor="#00E5CC"
+        android:centerColor="#00AAFF"
+        android:endColor="#0066FF"/>
+    <corners android:radius="14dp"/>
+</shape>

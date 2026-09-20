@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_glass_card">
+
+    <View
+        android:id="@+id/viewIndicator"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#FF5252" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <FrameLayout
+            android:id="@+id/flIconBg"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_glass_nav"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivAlertIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_bolt"
+                app:tint="#FF5252" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvAlertTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="High Total Consumption"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/flIconBg"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvAlertMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Home drawing 4.8kW — above your 4kW budget."
+            android:textColor="#4A7070"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvAlertTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvAlertTitle" />
+
+        <TextView
+            android:id="@+id/tvAlertTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="2 min ago"
+            android:textColor="#4A7070"
+            android:textSize="10sp"
+            app:layout_constraintStart_toStartOf="@id/tvAlertTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvAlertMessage" />
+
+        <TextView
+            android:id="@+id/btnAlertAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#1A00E5CC"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="Go to Relays"
+            android:textColor="#00E5CC"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
