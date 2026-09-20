@@ -27,14 +27,7 @@ android {
 
     sourceSets {
         getByName("main") {
-            res.srcDirs(
-                "src/main/res",
-                "src/main/res-features/login",
-                "src/main/res-features/dashboard",
-                "src/main/res-features/relays",
-                "src/main/res-features/analytics",
-                "src/main/res-features/alerts"
-            )
+            res.srcDirs("src/main/res")
         }
     }
 
