@@ -14,7 +14,7 @@ Volt-v1 is a modern Android application designed for real-time monitoring and co
 
 ## 📱 Screenshots
 
-*(Coming Soon - Add your screenshots here!)*
+*(Coming Soon)*
 
 ## 🛠️ Tech Stack
 
