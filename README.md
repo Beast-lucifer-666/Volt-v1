@@ -26,13 +26,13 @@ Volt-v1 is a modern Android application designed for real-time monitoring and co
 
 ## 📥 Download
 
-You can download the latest version of the Volt APK from the [Releases](https://github.com/YOUR_USERNAME/Volt-v1/releases) page.
+You can download the latest version of the Volt APK from the [Releases](https://github.com/Beast-lucifer-666/Volt-v1/releases) page.
 
 ## 🏗️ Getting Started
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/YOUR_USERNAME/Volt-v1.git
+    git clone https://github.com/Beast-lucifer-666/Volt-v1.git
     ```
 2.  **Open in Android Studio**:
     Import the project as a Gradle project.
