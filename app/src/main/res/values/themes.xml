@@ -8,6 +8,10 @@
 
     <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
 
+    <style name="CircleImageView">
+        <item name="cornerSize">50%</item>
+    </style>
+
     <!-- Dashboard Styles -->
     <style name="StatBox">
         <item name="android:layout_width">0dp</item>

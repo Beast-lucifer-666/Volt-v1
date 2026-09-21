@@ -78,4 +78,26 @@
     <string name="slot_6pm_now">6 PM–\nNow</string>
     <string name="predicted_bill">Predicted Bill</string>
     <string name="bill_details">End of March 2026 · ₹8/unit</string>
+
+    <!-- Side Panel -->
+    <string name="profile_settings_title">Profile &amp; Settings</string>
+    <string name="close_panel">Close Panel</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="edit_profile_picture">EDIT PROFILE PICTURE</string>
+    <string name="choose_avatar">Choose Avatar</string>
+    <string name="avatar_1">Avatar 1</string>
+    <string name="avatar_2">Avatar 2</string>
+    <string name="avatar_3">Avatar 3</string>
+    <string name="upload_custom_photo">Upload Custom Photo</string>
+    <string name="edit_device_names">EDIT DEVICE NAMES (RELAY NOS)</string>
+    <string name="relay_1">Relay 1</string>
+    <string name="relay_2">Relay 2</string>
+    <string name="relay_3">Relay 3</string>
+    <string name="relay_4">Relay 4</string>
+    <string name="hint_relay_1">Relay 1 Name (e.g. AC Unit)</string>
+    <string name="hint_relay_2">Relay 2 Name (e.g. Fridge)</string>
+    <string name="hint_relay_3">Relay 3 Name (e.g. Lights)</string>
+    <string name="hint_relay_4">Relay 4 Name (e.g. Washer)</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="profile_updated">Profile and device names updated!</string>
 </resources>

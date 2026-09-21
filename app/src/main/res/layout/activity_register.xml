@@ -49,7 +49,7 @@
                 android:padding="2dp"
                 app:strokeColor="#00E5CC"
                 app:strokeWidth="2dp"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
                 tools:ignore="ContentDescription" />
 
             <ImageView
