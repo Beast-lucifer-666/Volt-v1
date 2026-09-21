@@ -11,22 +11,6 @@ build/
 *.ipr
 *.iws
 .idea/
-.DS_Store
-
-# Local configuration
-local.properties
-
-# Secrets
-google-services.json
-
-# Capture and log files
-captures/
-*.log
-
-# External Native Build
-.externalNativeBuild
-.cxx
-cmake-build-debug/
 
 # OS generated files
 .DS_Store?

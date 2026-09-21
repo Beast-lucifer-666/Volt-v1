@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "608732025761",
+    "firebase_url": "https://volt-3b671-default-rtdb.firebaseio.com",
+    "project_id": "volt-3b671",
+    "storage_bucket": "volt-3b671.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608732025761:android:58e1ba87dd159db1b7f1e0",
+        "android_client_info": {
+          "package_name": "com.energy.volt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtNGVVxOxZ1PPMPWcoY3d2rg8dlIGZskY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608732025761:android:b950925b830a5d75b7f1e0",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtNGVVxOxZ1PPMPWcoY3d2rg8dlIGZskY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608732025761:android:2bcf2739ef8c3e74b7f1e0",
+        "android_client_info": {
+          "package_name": "com.example.voltgenerator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtNGVVxOxZ1PPMPWcoY3d2rg8dlIGZskY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
