@@ -1,6 +1,8 @@
 package com.example.myapplication.feature.analytics;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,12 +11,15 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -22,12 +27,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.myapplication.EnergyRepository;
 import com.example.myapplication.R;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -44,7 +53,7 @@ public class AnalyticsFragment extends Fragment {
     
     // Bottom Stats
     private TextView tvTotalKwhValue, tvKwhTodayVal, tvBillEstVal, tvCo2Val;
-    private TextView tvPredictedBillVal, tvBillToday;
+    private TextView tvPredictedBillVal, tvPredictedSubtitle, tvBillStart, tvBillToday, tvBillEnd;
     private TextView tvTotalKwhLabel, tvTotalKwhSubtitle;
     private ProgressBar billProgressBar;
 
@@ -55,7 +64,7 @@ public class AnalyticsFragment extends Fragment {
     // Usage bar views
     private View[] usageBarViews = new View[6];
 
-    private static final String[] TIME_LABELS = { "12–6 AM", "6–9 AM", "9 AM–12", "12–3 PM", "3–6 PM", "6 PM–Now" };
+    private static final String[] TIME_LABELS = { "12–6 AM", "6–9 AM", "9 AM–12", "12–3 PM", "3–6 PM", "6 PM–12" };
     private static final int[][] BAR_COLORS = {
             { 0xFF00B4D8, 0xFF4488FF }, // Teal → Blue
             { 0xFF00B4D8, 0xFF00E5CC }, // Teal → Cyan
@@ -117,8 +126,16 @@ public class AnalyticsFragment extends Fragment {
 
         // Predicted Bill
         tvPredictedBillVal = view.findViewById(R.id.tvPredictedBillVal);
+        tvPredictedSubtitle = view.findViewById(R.id.tvPredictedSubtitle);
+        tvBillStart = view.findViewById(R.id.tvBillStart);
         tvBillToday = view.findViewById(R.id.tvBillToday);
+        tvBillEnd = view.findViewById(R.id.tvBillEnd);
         billProgressBar = view.findViewById(R.id.billProgressBar);
+
+        View cardBill = view.findViewById(R.id.cardBill);
+        if (cardBill != null) {
+            cardBill.setOnClickListener(v -> showBudgetDialog());
+        }
 
         // Navigation/Action Buttons
         btnDay = view.findViewById(R.id.btnDay);
@@ -131,10 +148,38 @@ public class AnalyticsFragment extends Fragment {
             btnPrint.setOnClickListener(v -> captureAndSaveAnalytics());
         }
 
-        // Set current day in bill card
-        int dayOfMonth = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        // Set real-world / device date values in bill card
+        updateBillCardDates();
+        
+        Double currentBill = viewModel.getPredictedBill().getValue();
+        updateBillProgress(currentBill != null ? currentBill : 0.0);
+    }
+
+    private void updateBillCardDates() {
+        Calendar cal = Calendar.getInstance();
+        int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+        int maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        SimpleDateFormat fullMonthYearFormat = new SimpleDateFormat("MMMM yyyy", Locale.US);
+        String monthYearStr = fullMonthYearFormat.format(cal.getTime());
+
+        SimpleDateFormat shortMonthFormat = new SimpleDateFormat("MMM", Locale.US);
+        String shortMonthStr = shortMonthFormat.format(cal.getTime());
+
+        if (tvPredictedSubtitle != null) {
+            tvPredictedSubtitle.setText(String.format(Locale.US, "End of %s - ₹7/unit", monthYearStr));
+        }
+
+        if (tvBillStart != null) {
+            tvBillStart.setText(String.format(Locale.US, "%s 1", shortMonthStr));
+        }
+
         if (tvBillToday != null) {
-            tvBillToday.setText(String.format(Locale.getDefault(), "Today · Day %d", dayOfMonth));
+            tvBillToday.setText(String.format(Locale.US, "Today · Day %d", dayOfMonth));
+        }
+
+        if (tvBillEnd != null) {
+            tvBillEnd.setText(String.format(Locale.US, "%s %d", shortMonthStr, maxDaysInMonth));
         }
     }
 
@@ -204,9 +249,9 @@ public class AnalyticsFragment extends Fragment {
                 Uri imageUri = requireContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
                 fos = requireContext().getContentResolver().openOutputStream(imageUri);
             } else {
-                String imagesDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DCIM).toString();
-                java.io.File file = new java.io.File(imagesDir, filename);
-                fos = new java.io.FileOutputStream(file);
+                String imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString();
+                File file = new File(imagesDir, filename);
+                fos = new FileOutputStream(file);
             }
 
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
@@ -426,14 +471,74 @@ public class AnalyticsFragment extends Fragment {
         viewModel.getUsageByTime().observe(getViewLifecycleOwner(), this::updateUsageBars);
 
         // Predicted bill
-        viewModel.getPredictedBill().observe(getViewLifecycleOwner(),
-                bill -> { if (tvPredictedBillVal != null) tvPredictedBillVal.setText(String.format(Locale.getDefault(), "₹%,.0f", bill)); });
-
-        viewModel.getBillProgress().observe(getViewLifecycleOwner(), progress -> {
-            if (billProgressBar != null) {
-                billProgressBar.setProgress((int) (progress * 100));
+        viewModel.getPredictedBill().observe(getViewLifecycleOwner(), bill -> {
+            if (bill != null) {
+                if (tvPredictedBillVal != null) {
+                    tvPredictedBillVal.setText(String.format(Locale.getDefault(), "₹%,.0f", bill));
+                }
+                updateBillProgress(bill);
             }
         });
+
+        viewModel.getBillProgress().observe(getViewLifecycleOwner(), progress -> {
+            if (progress != null) {
+                Double currentBill = viewModel.getPredictedBill().getValue();
+                if (currentBill != null) {
+                    updateBillProgress(currentBill);
+                } else if (billProgressBar != null) {
+                    billProgressBar.setProgress(Math.round(progress * 100));
+                }
+            }
+        });
+    }
+
+    private void updateBillProgress(double predictedBill) {
+        if (billProgressBar == null || getContext() == null) return;
+        SharedPreferences prefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        float budget = prefs.getFloat("monthly_budget", 2500f);
+        if (budget > 0) {
+            float ratio = (float) (predictedBill / budget);
+            int progressPercent = Math.min(Math.max(Math.round(ratio * 100), 0), 100);
+            if (ratio > 0 && progressPercent == 0) {
+                progressPercent = 1;
+            }
+            billProgressBar.setProgress(progressPercent);
+        } else {
+            billProgressBar.setProgress(0);
+        }
+    }
+
+    private void showBudgetDialog() {
+        if (getContext() == null) return;
+        SharedPreferences prefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        float currentBudget = prefs.getFloat("monthly_budget", 2500f);
+
+        EditText input = new EditText(requireContext());
+        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        input.setText(String.format(Locale.US, "%.0f", currentBudget));
+        input.setSelection(input.getText().length());
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Monthly Budget Target")
+                .setMessage("Set your target monthly electricity budget (₹):")
+                .setView(input)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String str = input.getText().toString().trim();
+                    if (!str.isEmpty()) {
+                        try {
+                            float newBudget = Float.parseFloat(str);
+                            if (newBudget > 0) {
+                                prefs.edit().putFloat("monthly_budget", newBudget).apply();
+                                EnergyRepository.getInstance(requireContext()).updateMonthlyBudget(newBudget);
+                                Double currentBill = viewModel.getPredictedBill().getValue();
+                                updateBillProgress(currentBill != null ? currentBill : 0.0);
+                                Toast.makeText(getContext(), "Monthly budget target set to ₹" + Math.round(newBudget), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception ignored) {}
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private List<Float> voltageHistory = new ArrayList<>();

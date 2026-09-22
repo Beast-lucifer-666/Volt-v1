@@ -75,7 +75,7 @@
     <string name="slot_9_12">9 AM–12</string>
     <string name="slot_12_3pm">12–3 PM</string>
     <string name="slot_3_6pm">3–6 PM</string>
-    <string name="slot_6pm_now">6 PM–\nNow</string>
+    <string name="slot_6pm_now">6 PM–12</string>
     <string name="predicted_bill">Predicted Bill</string>
     <string name="bill_details">End of March 2026 · ₹8/unit</string>
 

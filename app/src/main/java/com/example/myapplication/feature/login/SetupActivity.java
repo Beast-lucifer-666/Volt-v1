@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.EnergyRepository;
 import com.example.myapplication.R;
 import com.example.myapplication.feature.dashboard.DashboardActivity;
 
@@ -67,6 +68,8 @@ public class SetupActivity extends AppCompatActivity {
 
             editor.putBoolean("setup_completed", true);
             editor.apply();
+
+            EnergyRepository.getInstance(getApplicationContext()).updateMonthlyBudget(budget);
 
             startActivity(new Intent(SetupActivity.this, DashboardActivity.class));
             finish();

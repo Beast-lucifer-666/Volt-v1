@@ -302,7 +302,7 @@
                 android:id="@+id/tvPredictedSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="End of March 2024 - ₹9/unit"
+                android:text="End of March 2024 - ₹7/unit"
                 android:textColor="@color/text_body"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -332,9 +332,9 @@
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 app:layout_constraintTop_toBottomOf="@id/billProgressBar">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Mar 1" android:textColor="@color/text_body" android:textSize="10sp"/>
+                <TextView android:id="@+id/tvBillStart" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Mar 1" android:textColor="@color/text_body" android:textSize="10sp"/>
                 <TextView android:id="@+id/tvBillToday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Today · Day 10" android:textColor="@color/text_body" android:textSize="10sp" android:gravity="center"/>
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Mar 31" android:textColor="@color/text_body" android:textSize="10sp" android:gravity="end"/>
+                <TextView android:id="@+id/tvBillEnd" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Mar 31" android:textColor="@color/text_body" android:textSize="10sp" android:gravity="end"/>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 

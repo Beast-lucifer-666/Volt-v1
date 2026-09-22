@@ -63,6 +63,7 @@ public class EnergyRepository {
     private ValueEventListener energyListener;
     private ValueEventListener commandsListener;
     private float monthlyBudget = 2500f;
+    private final Context appContext;
 
     private final Handler staleDataHandler = new Handler(Looper.getMainLooper());
     private final Runnable staleDataRunnable = this::resetLiveReadings;
@@ -73,7 +74,8 @@ public class EnergyRepository {
     }
 
     private EnergyRepository(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        this.appContext = context.getApplicationContext();
+        SharedPreferences prefs = appContext.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         monthlyBudget = prefs.getFloat("monthly_budget", 2500f);
 
         List<Float> initLive = new ArrayList<>();
@@ -250,7 +252,7 @@ public class EnergyRepository {
 
     private void calculateStats(double energy) {
         energyToday.postValue(energy);
-        billEstimate.postValue(energy * 9.0);
+        billEstimate.postValue(energy * 7.0);
 
         Period currentPeriod = selectedPeriod.getValue();
         totalKwh.postValue(energy); // Always show the actual energy for the total
@@ -260,20 +262,40 @@ public class EnergyRepository {
         Calendar cal = Calendar.getInstance();
         int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
+        if (appContext != null) {
+            SharedPreferences prefs = appContext.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+            monthlyBudget = prefs.getFloat("monthly_budget", 2500f);
+        }
+
         double predicted;
         if (energy > 0.001) {
-            predicted = energy * daysInMonth * 9.0;
+            predicted = energy * daysInMonth * 7.0;
         } else {
             predicted = 0.0;
         }
 
-        if (predicted > 0) {
-            predictedBill.postValue(predicted);
+        predictedBill.postValue(predicted);
+        if (monthlyBudget > 0) {
             float progress = (float) (predicted / monthlyBudget);
-            billProgress.postValue(Math.min(progress, 1.0f));
+            billProgress.postValue(Math.min(Math.max(progress, 0.0f), 1.0f));
+        } else {
+            billProgress.postValue(0.0f);
         }
 
         updateUsageByTime(energy);
+    }
+
+    public void updateMonthlyBudget(float newBudget) {
+        if (appContext != null) {
+            SharedPreferences prefs = appContext.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+            prefs.edit().putFloat("monthly_budget", newBudget).apply();
+        }
+        this.monthlyBudget = newBudget;
+        Double currentPredicted = predictedBill.getValue();
+        if (currentPredicted != null && newBudget > 0) {
+            float progress = (float) (currentPredicted / newBudget);
+            billProgress.postValue(Math.min(Math.max(progress, 0.0f), 1.0f));
+        }
     }
 
     private void updateGraphOnData(double energy, Period currentPeriod) {
