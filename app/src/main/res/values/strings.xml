@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">volt</string>
+    <string name="app_name">Volt</string>
     <string name="register_prompt">Don\'t have an account? Register</string>
     <string name="register_link">Register</string>
     <string name="create_account">CREATE ACCOUNT</string>
