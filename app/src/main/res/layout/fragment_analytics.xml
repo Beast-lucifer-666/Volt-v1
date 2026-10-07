@@ -196,9 +196,10 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tvTotalKwhUnit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="kWh this week"
+                android:text="kWh today"
                 android:textColor="@color/text_body"
                 android:textSize="10sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -210,6 +211,23 @@
                 android:layout_height="160dp"
                 android:layout_marginTop="16dp"
                 app:layout_constraintTop_toBottomOf="@id/tvTotalKwhLabel" />
+
+            <!-- Digital Wellbeing style breakdown slots -->
+            <LinearLayout
+                android:id="@+id/llUsageBars"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/weeklyChartContainer">
+                <include android:id="@+id/usageBar0" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar1" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar2" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar3" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar4" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar5" layout="@layout/item_usage_bar" />
+                <include android:id="@+id/usageBar6" layout="@layout/item_usage_bar" />
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Stats Row -->
@@ -233,51 +251,9 @@
             <LinearLayout style="@style/AnalyticsStatCard">
                 <TextView android:id="@+id/tvCo2Val" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2.1T" android:textColor="@color/chart_purple" android:textSize="20sp" android:textStyle="bold"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CO₂ Saved" android:textColor="@color/text_body" android:textSize="10sp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="↑ 8.5%" android:textColor="@color/volt_teal" android:textSize="10sp" android:layout_marginTop="4dp"/>
+                <TextView android:id="@+id/tvCo2Subtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="↑ 8.5%" android:textColor="@color/volt_teal" android:textSize="10sp" android:layout_marginTop="4dp"/>
             </LinearLayout>
         </LinearLayout>
-
-        <!-- Usage by Time -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cardUsage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_glass_card"
-            android:padding="20dp"
-            app:layout_constraintTop_toBottomOf="@id/llStatsRow">
-            <TextView
-                android:id="@+id/tvUsageTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Usage by Time"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Today - kWh"
-                android:textColor="@color/text_body"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/tvUsageTitle">
-                <include android:id="@+id/usageBar0" layout="@layout/item_usage_bar" />
-                <include android:id="@+id/usageBar1" layout="@layout/item_usage_bar" />
-                <include android:id="@+id/usageBar2" layout="@layout/item_usage_bar" />
-                <include android:id="@+id/usageBar3" layout="@layout/item_usage_bar" />
-                <include android:id="@+id/usageBar4" layout="@layout/item_usage_bar" />
-                <include android:id="@+id/usageBar5" layout="@layout/item_usage_bar" />
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Predicted Bill -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -287,7 +263,7 @@
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_glass_card"
             android:padding="20dp"
-            app:layout_constraintTop_toBottomOf="@id/cardUsage">
+            app:layout_constraintTop_toBottomOf="@id/llStatsRow">
             <TextView
                 android:id="@+id/tvPredictedTitle"
                 android:layout_width="wrap_content"

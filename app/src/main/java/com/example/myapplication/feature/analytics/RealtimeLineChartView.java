@@ -19,7 +19,7 @@ public class RealtimeLineChartView extends View {
     private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path path = new Path();
 
-    private static final int MAX_POINTS = 50;
+    private int maxPoints = 60; // Default 1 min (60 seconds)
 
     public RealtimeLineChartView(Context context) {
         super(context);
@@ -53,6 +53,11 @@ public class RealtimeLineChartView extends View {
         // We adapt the existing call signature but focus on voltage and current
         this.voltageData = voltage != null ? new ArrayList<>(voltage) : new ArrayList<>();
         this.currentData = current != null ? new ArrayList<>(current) : new ArrayList<>();
+        invalidate();
+    }
+
+    public void setMaxPoints(int maxPoints) {
+        this.maxPoints = maxPoints;
         invalidate();
     }
 
@@ -102,7 +107,7 @@ public class RealtimeLineChartView extends View {
         if (data.size() < 2) return;
 
         path.reset();
-        float xStep = width / (MAX_POINTS - 1);
+        float xStep = width / (maxPoints - 1);
         int size = data.size();
         float range = maxVal - minVal;
         if (range == 0) range = 1.0f;

@@ -80,7 +80,7 @@ public class AlertsFragment extends Fragment {
             tvAlertHumidity.setText(String.format(Locale.getDefault(), "%d%%", h)));
 
         viewModel.getVoltage().observe(getViewLifecycleOwner(), v -> {
-            tvAlertVoltage.setText(String.format(Locale.getDefault(), "%.0f V", v));
+            tvAlertVoltage.setText(String.format(Locale.getDefault(), "%.1f V", v));
             if (v < 100) {
                 tvVoltageStatus.setText("CRITICAL");
                 tvVoltageStatus.setTextColor(0xFFFF5252);
@@ -93,7 +93,7 @@ public class AlertsFragment extends Fragment {
         });
 
         viewModel.getCurrentAmps().observe(getViewLifecycleOwner(), a -> 
-            tvAlertCurrent.setText(String.format(Locale.getDefault(), "%.1f A", a)));
+            tvAlertCurrent.setText(String.format(Locale.getDefault(), "%.2f A", a)));
 
         viewModel.getActiveAlerts().observe(getViewLifecycleOwner(), this::updateAlertsUI);
         

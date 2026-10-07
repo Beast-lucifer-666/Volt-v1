@@ -73,7 +73,11 @@ public class WeeklyChartView extends View {
         float chartHeight = chartBottom - chartTop;
 
         int size = dataPoints.size();
-        float xStep = size > 1 ? width / (size - 1) : width;
+        
+        // Add padding on the sides so the first and last labels/dots are not clipped.
+        float paddingX = 60f; 
+        float drawWidth = width - (2 * paddingX);
+        float xStep = size > 1 ? drawWidth / (size - 1) : drawWidth;
 
         // Find max for normalization
         float maxVal = 0;
@@ -88,7 +92,7 @@ public class WeeklyChartView extends View {
         float[] xPoints = new float[size];
         float[] yPoints = new float[size];
         for (int i = 0; i < size; i++) {
-            xPoints[i] = i * xStep;
+            xPoints[i] = paddingX + i * xStep;
             yPoints[i] = chartBottom - (dataPoints.get(i) / maxVal * chartHeight);
         }
 

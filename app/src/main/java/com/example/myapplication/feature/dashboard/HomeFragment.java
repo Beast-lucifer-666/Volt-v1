@@ -46,6 +46,7 @@ public class HomeFragment extends Fragment {
 
     private TextView tvPowerValue, tvVoltage, tvCurrent, tvEnergyToday, tvTemperature, tvHumidity, tvSavings, tvSavingsPerc, tvTodayKwhVal;
     private TextView tvControlsSummary;
+    private TextView tvTodayKwhTitle, tvGraphLabelStart, tvGraphLabelMid, tvGraphLabelEnd;
     private MaterialSwitch switchRelay1, switchRelay2;
     private TextView tvStatusRelay1, tvStatusRelay2;
     private TextView tvRelay1Name, tvRelay2Name;
@@ -124,6 +125,11 @@ public class HomeFragment extends Fragment {
         tvSavings = view.findViewById(R.id.tvSavings);
         tvSavingsPerc = view.findViewById(R.id.tvSavingsPerc);
         ivProfile = view.findViewById(R.id.ivProfile);
+        
+        tvTodayKwhTitle = view.findViewById(R.id.tvTodayKwhTitle);
+        tvGraphLabelStart = view.findViewById(R.id.tvGraphLabelStart);
+        tvGraphLabelMid = view.findViewById(R.id.tvGraphLabelMid);
+        tvGraphLabelEnd = view.findViewById(R.id.tvGraphLabelEnd);
 
         switchRelay1 = view.findViewById(R.id.switchRelay1);
         switchRelay2 = view.findViewById(R.id.switchRelay2);
@@ -387,11 +393,30 @@ public class HomeFragment extends Fragment {
             if (liveGraphView != null) liveGraphView.setData(data);
         });
 
+        viewModel.getGraphLabels().observe(getViewLifecycleOwner(), labels -> {
+            if (labels != null && labels.size() >= 3) {
+                if (tvGraphLabelStart != null) tvGraphLabelStart.setText(labels.get(0));
+                if (tvGraphLabelMid != null) tvGraphLabelMid.setText(labels.get(labels.size() / 2));
+                if (tvGraphLabelEnd != null) tvGraphLabelEnd.setText(labels.get(labels.size() - 1));
+            }
+        });
+
+        viewModel.getSelectedPeriod().observe(getViewLifecycleOwner(), period -> {
+            if (tvTodayKwhTitle != null) {
+                switch (period) {
+                    case DAY: tvTodayKwhTitle.setText(R.string.todays_kwh); break;
+                    case WEEK: tvTodayKwhTitle.setText("This Week's kWh"); break;
+                    case MONTH: tvTodayKwhTitle.setText("This Month's kWh"); break;
+                    case YEAR: tvTodayKwhTitle.setText("This Year's kWh"); break;
+                }
+            }
+        });
+
         viewModel.getVoltage().observe(getViewLifecycleOwner(), v ->
-            tvVoltage.setText(String.format(Locale.getDefault(), "%.0f V", v)));
+            tvVoltage.setText(String.format(Locale.getDefault(), "%.1f V", v)));
 
         viewModel.getCurrentAmps().observe(getViewLifecycleOwner(), a ->
-            tvCurrent.setText(String.format(Locale.getDefault(), "%.1f A", a)));
+            tvCurrent.setText(String.format(Locale.getDefault(), "%.2f A", a)));
 
         viewModel.getTemperature().observe(getViewLifecycleOwner(), t ->
             tvTemperature.setText(String.format(Locale.getDefault(), "%.1f°", t)));
@@ -402,7 +427,11 @@ public class HomeFragment extends Fragment {
         viewModel.getEnergyToday().observe(getViewLifecycleOwner(), energy -> {
             String energyStr = String.format(Locale.getDefault(), "%.3f kWh", energy);
             tvEnergyToday.setText(energyStr);
-            tvTodayKwhVal.setText(energyStr);
+        });
+
+        viewModel.getTotalKwh().observe(getViewLifecycleOwner(), total -> {
+            String totalStr = String.format(Locale.getDefault(), "%.3f kWh", total);
+            if (tvTodayKwhVal != null) tvTodayKwhVal.setText(totalStr);
         });
 
         viewModel.getSavingsMonth().observe(getViewLifecycleOwner(), savings ->
@@ -513,26 +542,34 @@ public class HomeFragment extends Fragment {
 
             float width = getWidth();
             float height = getHeight();
-            int maxPoints = 30;
-            float xStep = width / (maxPoints - 1);
-            float maxVal = 5.0f;
+
+            int size = dataPoints.size();
+            float xStep = size > 1 ? width / (size - 1) : width;
+            
+            float maxVal = 0;
+            for (float val : dataPoints) {
+                if (val > maxVal) maxVal = val;
+            }
+            if (maxVal == 0) maxVal = 1;
+
+            float[] xPoints = new float[size];
+            float[] yPoints = new float[size];
+            for (int i = 0; i < size; i++) {
+                xPoints[i] = i * xStep;
+                yPoints[i] = height - (dataPoints.get(i) / maxVal * (height - 20)) - 10;
+            }
 
             path.reset();
             fillPath.reset();
 
-            int size = dataPoints.size();
-            for (int i = 0; i < size; i++) {
-                float x = width - ((size - 1 - i) * xStep);
-                float y = height - (dataPoints.get(i) / maxVal * (height - 20)) - 10;
+            path.moveTo(xPoints[0], yPoints[0]);
+            fillPath.moveTo(xPoints[0], height);
+            fillPath.lineTo(xPoints[0], yPoints[0]);
 
-                if (i == 0) {
-                    path.moveTo(x, y);
-                    fillPath.moveTo(x, height);
-                    fillPath.lineTo(x, y);
-                } else {
-                    path.lineTo(x, y);
-                    fillPath.lineTo(x, y);
-                }
+            for (int i = 1; i < size; i++) {
+                float cx = (xPoints[i - 1] + xPoints[i]) / 2f;
+                path.cubicTo(cx, yPoints[i - 1], cx, yPoints[i], xPoints[i], yPoints[i]);
+                fillPath.cubicTo(cx, yPoints[i - 1], cx, yPoints[i], xPoints[i], yPoints[i]);
             }
 
             fillPath.lineTo(width, height);

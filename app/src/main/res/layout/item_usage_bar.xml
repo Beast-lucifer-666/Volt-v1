@@ -8,9 +8,9 @@
 
     <TextView
         android:id="@+id/tvUsageLabel"
-        android:layout_width="60dp"
+        android:layout_width="75dp"
         android:layout_height="wrap_content"
-        android:textColor="#4A7070"
+        android:textColor="#7AABAA"
         android:textSize="12sp"
         android:text="12-6 AM" />
 
@@ -29,13 +29,14 @@
 
     <TextView
         android:id="@+id/tvUsageValue"
-        android:layout_width="30dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:minWidth="50dp"
         android:textColor="#FFFFFF"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:textStyle="bold"
         android:gravity="end"
-        android:text="0.0" />
+        android:text="0.000" />
 
 </LinearLayout>

@@ -12,11 +12,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.InputType;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,7 +58,7 @@ public class AnalyticsFragment extends Fragment {
     // Bottom Stats
     private TextView tvTotalKwhValue, tvKwhTodayVal, tvBillEstVal, tvCo2Val;
     private TextView tvPredictedBillVal, tvPredictedSubtitle, tvBillStart, tvBillToday, tvBillEnd;
-    private TextView tvTotalKwhLabel, tvTotalKwhSubtitle;
+    private TextView tvTotalKwhLabel, tvTotalKwhSubtitle, tvTotalKwhUnit;
     private ProgressBar billProgressBar;
 
     // Buttons
@@ -62,9 +66,13 @@ public class AnalyticsFragment extends Fragment {
     private Button btnPrint;
 
     // Usage bar views
-    private View[] usageBarViews = new View[6];
+    private View[] usageBarViews = new View[7];
 
-    private static final String[] TIME_LABELS = { "12–6 AM", "6–9 AM", "9 AM–12", "12–3 PM", "3–6 PM", "6 PM–12" };
+    private static final String[] DAY_SLOT_LABELS = { "12–6 AM", "6–9 AM", "9 AM–12", "12–3 PM", "3–6 PM", "6 PM–12" };
+    private static final String[] WEEK_SLOT_LABELS = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+    private static final String[] MONTH_SLOT_LABELS = { "D1–D5", "D6–D10", "D11–D15", "D16–D20", "D21–D25", "D26–End" };
+    private static final String[] YEAR_SLOT_LABELS = { "Jan–Feb", "Mar–Apr", "May–Jun", "Jul–Aug", "Sep–Oct", "Nov–Dec" };
+
     private static final int[][] BAR_COLORS = {
             { 0xFF00B4D8, 0xFF4488FF }, // Teal → Blue
             { 0xFF00B4D8, 0xFF00E5CC }, // Teal → Cyan
@@ -91,6 +99,18 @@ public class AnalyticsFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        timerHandler.postDelayed(timerRunnable, 1000);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timerHandler.removeCallbacks(timerRunnable);
+    }
+
     private void initViews(View view) {
         // 6 Grid Stats
         tvVoltageVal = view.findViewById(R.id.tvVoltageVal);
@@ -109,6 +129,7 @@ public class AnalyticsFragment extends Fragment {
         // Total kWh dynamic labels
         tvTotalKwhLabel = view.findViewById(R.id.tvTotalKwhLabel);
         tvTotalKwhSubtitle = view.findViewById(R.id.tvTotalKwhSubtitle);
+        tvTotalKwhUnit = view.findViewById(R.id.tvTotalKwhUnit);
         if (tvTotalKwhSubtitle == null) {
             // If ID not found, find by position or just ignore. In typical layouts it's the 2nd child of card
             View card = view.findViewById(R.id.cardTotalKwh);
@@ -167,7 +188,15 @@ public class AnalyticsFragment extends Fragment {
         String shortMonthStr = shortMonthFormat.format(cal.getTime());
 
         if (tvPredictedSubtitle != null) {
-            tvPredictedSubtitle.setText(String.format(Locale.US, "End of %s - ₹7/unit", monthYearStr));
+            String periodPrefix;
+            if (dayOfMonth <= 10) {
+                periodPrefix = "Beginning of";
+            } else if (dayOfMonth <= 20) {
+                periodPrefix = "Middle of";
+            } else {
+                periodPrefix = "End of";
+            }
+            tvPredictedSubtitle.setText(String.format(Locale.US, "%s %s - ₹7/unit", periodPrefix, monthYearStr));
         }
 
         if (tvBillStart != null) {
@@ -267,32 +296,17 @@ public class AnalyticsFragment extends Fragment {
     private void setupPeriodSelector() {
         View.OnClickListener listener = v -> {
             EnergyRepository.Period selectedPeriod;
-            String label;
-            String subtitle;
             
             if (v.getId() == R.id.btnDay) {
                 selectedPeriod = EnergyRepository.Period.DAY;
-                label = "Total kWh (Today)";
-                subtitle = "Whole home · Today";
             } else if (v.getId() == R.id.btnWeek) {
                 selectedPeriod = EnergyRepository.Period.WEEK;
-                label = "Total kWh (Weekly)";
-                subtitle = "Whole home · This week";
             } else if (v.getId() == R.id.btnMonth) {
                 selectedPeriod = EnergyRepository.Period.MONTH;
-                label = "Total kWh (Monthly)";
-                subtitle = "Whole home · This month";
             } else {
                 selectedPeriod = EnergyRepository.Period.YEAR;
-                label = "Total kWh (Yearly)";
-                subtitle = "Whole home · This year";
             }
 
-            // Update UI
-            updatePeriodButtons(v.getId());
-            if (tvTotalKwhLabel != null) tvTotalKwhLabel.setText(label);
-            if (tvTotalKwhSubtitle != null) tvTotalKwhSubtitle.setText(subtitle);
-            
             // Trigger Data Update
             viewModel.setPeriod(selectedPeriod);
         };
@@ -301,6 +315,11 @@ public class AnalyticsFragment extends Fragment {
         btnWeek.setOnClickListener(listener);
         btnMonth.setOnClickListener(listener);
         btnYear.setOnClickListener(listener);
+
+        EnergyRepository.Period currentPeriod = viewModel.getSelectedPeriod().getValue();
+        if (currentPeriod == null) {
+            btnDay.post(() -> btnDay.performClick());
+        }
     }
 
     private void updatePeriodButtons(int activeId) {
@@ -344,6 +363,35 @@ public class AnalyticsFragment extends Fragment {
         };
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
+        final int[] points = { 60, 180, 300, 600 };
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                EnergyRepository repo = EnergyRepository.getInstance(requireContext());
+                repo.realtimeMaxHistory = points[position];
+                
+                if (repo.realtimeVoltageHistory.size() > repo.realtimeMaxHistory) {
+                    List<Float> subList = new ArrayList<>(repo.realtimeVoltageHistory.subList(repo.realtimeVoltageHistory.size() - repo.realtimeMaxHistory, repo.realtimeVoltageHistory.size()));
+                    repo.realtimeVoltageHistory.clear();
+                    repo.realtimeVoltageHistory.addAll(subList);
+                }
+                if (repo.realtimeCurrentHistory.size() > repo.realtimeMaxHistory) {
+                    List<Float> subList = new ArrayList<>(repo.realtimeCurrentHistory.subList(repo.realtimeCurrentHistory.size() - repo.realtimeMaxHistory, repo.realtimeCurrentHistory.size()));
+                    repo.realtimeCurrentHistory.clear();
+                    repo.realtimeCurrentHistory.addAll(subList);
+                }
+                
+                if (realtimeChart != null) {
+                    realtimeChart.setMaxPoints(repo.realtimeMaxHistory);
+                    realtimeChart.setData(repo.realtimeVoltageHistory, repo.realtimeCurrentHistory, null);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
     private void setupCharts(View view) {
@@ -371,47 +419,72 @@ public class AnalyticsFragment extends Fragment {
     }
 
     private void setupUsageBars(View view) {
-        int[] barIds = { R.id.usageBar0, R.id.usageBar1, R.id.usageBar2, R.id.usageBar3, R.id.usageBar4,
-                R.id.usageBar5 };
+        int[] barIds = { R.id.usageBar0, R.id.usageBar1, R.id.usageBar2, R.id.usageBar3, R.id.usageBar4, R.id.usageBar5, R.id.usageBar6 };
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             usageBarViews[i] = view.findViewById(barIds[i]);
-            if (usageBarViews[i] != null) {
-                TextView label = usageBarViews[i].findViewById(R.id.tvUsageLabel);
-                if (label != null) label.setText(TIME_LABELS[i]);
-            }
         }
     }
 
     private void updateUsageBars(List<Float> values) {
-        if (values == null || values.size() < 6) return;
+        if (values == null) return;
+
+        EnergyRepository.Period period = viewModel.getSelectedPeriod().getValue();
+        if (period == null) period = EnergyRepository.Period.DAY;
+
+        String[] labels;
+        switch (period) {
+            case WEEK: labels = WEEK_SLOT_LABELS; break;
+            case MONTH: labels = MONTH_SLOT_LABELS; break;
+            case YEAR: labels = YEAR_SLOT_LABELS; break;
+            default: labels = DAY_SLOT_LABELS; break;
+        }
+
+        int count = Math.min(values.size(), labels.length);
 
         float maxVal = 0;
-        for (float v : values) { if (v > maxVal) maxVal = v; }
-        if (maxVal == 0) maxVal = 1;
+        for (int i = 0; i < count; i++) {
+            float v = values.get(i);
+            if (v > maxVal) maxVal = v;
+        }
+        if (maxVal == 0) maxVal = 1.0f;
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             if (usageBarViews[i] == null) continue;
 
-            TextView valueText = usageBarViews[i].findViewById(R.id.tvUsageValue);
-            View barFill = usageBarViews[i].findViewById(R.id.usageBarFill);
+            if (i < count) {
+                usageBarViews[i].setVisibility(View.VISIBLE);
 
-            if (valueText != null) valueText.setText(String.format(Locale.getDefault(), "%.3f", values.get(i)));
+                TextView labelText = usageBarViews[i].findViewById(R.id.tvUsageLabel);
+                TextView valueText = usageBarViews[i].findViewById(R.id.tvUsageValue);
+                View barFill = usageBarViews[i].findViewById(R.id.usageBarFill);
 
-            if (barFill != null) {
-                float fraction = values.get(i) / maxVal;
-                GradientDrawable gradient = new GradientDrawable(
-                        GradientDrawable.Orientation.LEFT_RIGHT, BAR_COLORS[i]);
-                gradient.setCornerRadius(dpToPx(6));
-                barFill.setBackground(gradient);
+                if (labelText != null) labelText.setText(labels[i]);
+                if (valueText != null) valueText.setText(String.format(Locale.getDefault(), "%.3f", values.get(i)));
 
-                barFill.post(() -> {
-                    ViewGroup parent = (ViewGroup) barFill.getParent();
-                    int parentWidth = parent.getWidth();
-                    ViewGroup.LayoutParams lp = barFill.getLayoutParams();
-                    lp.width = (int) (parentWidth * fraction);
-                    barFill.setLayoutParams(lp);
-                });
+                if (barFill != null) {
+                    float val = values.get(i);
+                    float fraction = (val <= 0f) ? 0f : (val / maxVal);
+
+                    int colorIdx = i % BAR_COLORS.length;
+                    GradientDrawable gradient = new GradientDrawable(
+                            GradientDrawable.Orientation.LEFT_RIGHT, BAR_COLORS[colorIdx]);
+                    gradient.setCornerRadius(dpToPx(6));
+                    barFill.setBackground(gradient);
+
+                    final float fFrac = fraction;
+                    barFill.post(() -> {
+                        ViewGroup parent = (ViewGroup) barFill.getParent();
+                        if (parent != null) {
+                            int parentWidth = parent.getWidth();
+                            ViewGroup.LayoutParams lp = barFill.getLayoutParams();
+                            lp.width = (int) (parentWidth * fFrac);
+                            barFill.setLayoutParams(lp);
+                        }
+                    });
+                }
+            } else {
+                usageBarViews[i].setVisibility(View.GONE);
             }
         }
     }
@@ -436,13 +509,8 @@ public class AnalyticsFragment extends Fragment {
         viewModel.getPowerFactor().observe(getViewLifecycleOwner(), 
             pf -> { if (tvPowerFactorVal != null) tvPowerFactorVal.setText(String.format(Locale.getDefault(), "%.2f", pf)); });
 
-        // Real-time chart
-        viewModel.getVoltage().observe(getViewLifecycleOwner(), v -> {
-            updateRealtimeChart();
-        });
-        viewModel.getCurrentAmps().observe(getViewLifecycleOwner(), a -> {
-            updateRealtimeChart();
-        });
+        // Real-time chart is now updated via timer in onResume/onPause
+        // We still need to observe other data
 
         // Weekly chart
         viewModel.getPeriodData().observe(getViewLifecycleOwner(), data -> {
@@ -469,6 +537,37 @@ public class AnalyticsFragment extends Fragment {
 
         // Usage by time
         viewModel.getUsageByTime().observe(getViewLifecycleOwner(), this::updateUsageBars);
+
+        viewModel.getSelectedPeriod().observe(getViewLifecycleOwner(), period -> {
+            if (period == null) return;
+            
+            int activeId = R.id.btnDay;
+            String label = "Total kWh (Today)";
+            String subtitle = "Whole home · Today";
+            String unitLabel = "kWh today";
+
+            if (period == EnergyRepository.Period.WEEK) {
+                activeId = R.id.btnWeek;
+                label = "Total kWh (Weekly)";
+                subtitle = "Whole home · This week";
+                unitLabel = "kWh this week";
+            } else if (period == EnergyRepository.Period.MONTH) {
+                activeId = R.id.btnMonth;
+                label = "Total kWh (Monthly)";
+                subtitle = "Whole home · This month";
+                unitLabel = "kWh this month";
+            } else if (period == EnergyRepository.Period.YEAR) {
+                activeId = R.id.btnYear;
+                label = "Total kWh (Yearly)";
+                subtitle = "Whole home · This year";
+                unitLabel = "kWh this year";
+            }
+
+            updatePeriodButtons(activeId);
+            if (tvTotalKwhLabel != null) tvTotalKwhLabel.setText(label);
+            if (tvTotalKwhSubtitle != null) tvTotalKwhSubtitle.setText(subtitle);
+            if (tvTotalKwhUnit != null) tvTotalKwhUnit.setText(unitLabel);
+        });
 
         // Predicted bill
         viewModel.getPredictedBill().observe(getViewLifecycleOwner(), bill -> {
@@ -517,11 +616,25 @@ public class AnalyticsFragment extends Fragment {
         input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         input.setText(String.format(Locale.US, "%.0f", currentBudget));
         input.setSelection(input.getText().length());
+        input.setTextColor(0xFFFFFFFF); // Keep text white
 
-        new AlertDialog.Builder(requireContext())
+        // Center the input text
+        input.setGravity(Gravity.CENTER);
+
+        // Add proper margins using a container
+        FrameLayout container = new FrameLayout(requireContext());
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(dpToPx(24), dpToPx(16), dpToPx(24), dpToPx(8));
+        input.setLayoutParams(params);
+        container.addView(input);
+
+        new AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
                 .setTitle("Monthly Budget Target")
                 .setMessage("Set your target monthly electricity budget (₹):")
-                .setView(input)
+                .setView(container)
                 .setPositiveButton("Save", (dialog, which) -> {
                     String str = input.getText().toString().trim();
                     if (!str.isEmpty()) {
@@ -541,26 +654,37 @@ public class AnalyticsFragment extends Fragment {
                 .show();
     }
 
-    private List<Float> voltageHistory = new ArrayList<>();
-    private List<Float> currentHistory = new ArrayList<>();
-    private static final int MAX_HISTORY = 50;
+    private final Handler timerHandler = new Handler(Looper.getMainLooper());
+    private final Runnable timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            updateRealtimeChart();
+            timerHandler.postDelayed(this, 1000);
+        }
+    };
 
     private void updateRealtimeChart() {
-        if (realtimeChart == null) return;
+        if (realtimeChart == null || viewModel == null) return;
         
         Double v = viewModel.getVoltage().getValue();
         Double a = viewModel.getCurrentAmps().getValue();
         
+        EnergyRepository repo = EnergyRepository.getInstance(requireContext());
+        
         if (v != null) {
-            voltageHistory.add(v.floatValue());
-            if (voltageHistory.size() > MAX_HISTORY) voltageHistory.remove(0);
+            repo.realtimeVoltageHistory.add(v.floatValue());
+            if (repo.realtimeVoltageHistory.size() > repo.realtimeMaxHistory) {
+                repo.realtimeVoltageHistory.remove(0);
+            }
         }
         if (a != null) {
-            currentHistory.add(a.floatValue());
-            if (currentHistory.size() > MAX_HISTORY) currentHistory.remove(0);
+            repo.realtimeCurrentHistory.add(a.floatValue());
+            if (repo.realtimeCurrentHistory.size() > repo.realtimeMaxHistory) {
+                repo.realtimeCurrentHistory.remove(0);
+            }
         }
         
-        realtimeChart.setData(voltageHistory, currentHistory, null);
+        realtimeChart.setData(repo.realtimeVoltageHistory, repo.realtimeCurrentHistory, null);
     }
 
     private int dpToPx(int dp) {

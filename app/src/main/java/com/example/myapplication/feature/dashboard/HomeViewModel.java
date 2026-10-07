@@ -19,7 +19,11 @@ public class HomeViewModel extends AndroidViewModel {
     public LiveData<Double> getCurrentAmps() { return repository.currentAmps; }
     public LiveData<Double> getActivePower() { return repository.activePower; }
     public LiveData<Double> getEnergyToday() { return repository.energyToday; }
-    public LiveData<List<Float>> getGraphData() { return repository.livePowerHistory; }
+    public LiveData<Double> getTotalKwh() { return repository.totalKwh; }
+    public LiveData<List<Float>> getGraphData() { return repository.periodData; }
+    public LiveData<List<String>> getGraphLabels() { return repository.periodLabels; }
+    public LiveData<EnergyRepository.Period> getSelectedPeriod() { return repository.selectedPeriod; }
+
     
     public LiveData<Double> getTemperature() { return repository.temperature; }
     public LiveData<Integer> getHumidity() { return repository.humidity; }
