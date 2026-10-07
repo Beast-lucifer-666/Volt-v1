@@ -1,16 +1,22 @@
 package com.example.myapplication.feature.dashboard;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ImageDecoder;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +25,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,20 +34,36 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myapplication.R;
+import com.example.myapplication.BuildConfig;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class HomeFragment extends Fragment {
 
@@ -62,9 +85,13 @@ public class HomeFragment extends Fragment {
     private TextView tvPanelUsername, tvPanelEmail;
     private ImageView ivPanelAvatar1, ivPanelAvatar2, ivPanelAvatar3;
     private View btnUploadPhoto;
+    private EditText etPanelUsername;
     private EditText etRelay1Name, etRelay2Name, etRelay3Name, etRelay4Name;
     private Button btnSaveProfile;
     private ImageButton btnClosePanel;
+    private SeekBar sbNavOpacity;
+    private TextView tvNavOpacityVal, tvAppVersionCode;
+    private View btnCheckUpdates, btnAboutApp;
 
     private String selectedAvatar = "";
     private Uri selectedImageUri = null;
@@ -151,12 +178,18 @@ public class HomeFragment extends Fragment {
         ivPanelAvatar2 = view.findViewById(R.id.ivPanelAvatar2);
         ivPanelAvatar3 = view.findViewById(R.id.ivPanelAvatar3);
         btnUploadPhoto = view.findViewById(R.id.btnUploadPhoto);
+        etPanelUsername = view.findViewById(R.id.etPanelUsername);
         etRelay1Name = view.findViewById(R.id.etRelay1Name);
         etRelay2Name = view.findViewById(R.id.etRelay2Name);
         etRelay3Name = view.findViewById(R.id.etRelay3Name);
         etRelay4Name = view.findViewById(R.id.etRelay4Name);
         btnSaveProfile = view.findViewById(R.id.btnSaveProfile);
         btnClosePanel = view.findViewById(R.id.btnClosePanel);
+        sbNavOpacity = view.findViewById(R.id.sbNavOpacity);
+        tvNavOpacityVal = view.findViewById(R.id.tvNavOpacityVal);
+        tvAppVersionCode = view.findViewById(R.id.tvAppVersionCode);
+        btnCheckUpdates = view.findViewById(R.id.btnCheckUpdates);
+        btnAboutApp = view.findViewById(R.id.btnAboutApp);
 
         loadProfilePicture();
         loadCustomApplianceNames();
@@ -189,6 +222,87 @@ public class HomeFragment extends Fragment {
 
         if (btnSaveProfile != null) {
             btnSaveProfile.setOnClickListener(v -> saveProfileAndRelayChanges());
+        }
+
+        if (sbNavOpacity != null) {
+            sbNavOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (fromUser) {
+                        if (tvNavOpacityVal != null) tvNavOpacityVal.setText(progress + "%");
+                        if (getActivity() instanceof DashboardActivity) {
+                            ((DashboardActivity) getActivity()).updateNavOpacity(progress);
+                        }
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {}
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    int progress = seekBar.getProgress();
+                    SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                    prefs.edit().putInt("nav_opacity", progress).apply();
+                }
+            });
+        }
+
+        if (btnCheckUpdates != null) {
+            btnCheckUpdates.setOnClickListener(v -> {
+                @SuppressWarnings("deprecation")
+                ProgressDialog progressDialog = new ProgressDialog(requireContext());
+                progressDialog.setMessage("Checking for updates...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
+                DatabaseReference versionRef = FirebaseDatabase.getInstance().getReference("app_version");
+                versionRef.get().addOnCompleteListener(task -> {
+                    progressDialog.dismiss();
+                    if (task.isSuccessful() && task.getResult().exists()) {
+                        DataSnapshot snap = task.getResult();
+                        Long remoteCodeLong = snap.child("version_code").getValue(Long.class);
+                        String remoteName = snap.child("version_name").getValue(String.class);
+                        String apkUrl = snap.child("apk_url").getValue(String.class);
+
+                        int remoteCode = remoteCodeLong != null ? remoteCodeLong.intValue() : BuildConfig.VERSION_CODE;
+                        final String finalRemoteName = remoteName != null ? remoteName : "1.0.40";
+
+                        if (remoteCode > BuildConfig.VERSION_CODE && apkUrl != null && !apkUrl.isEmpty()) {
+                            new AlertDialog.Builder(requireContext())
+                                .setTitle("Update Available (v" + finalRemoteName + ")")
+                                .setMessage("A new version of Volt (v" + finalRemoteName + ") is available. Current version is v" + BuildConfig.VERSION_NAME + " (Build " + BuildConfig.VERSION_CODE + ").\n\nWould you like to download and install it now?")
+                                .setPositiveButton("Download & Install", (dialog, which) -> {
+                                    downloadAndInstallApk(apkUrl, finalRemoteName);
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .show();
+                        } else {
+                            new AlertDialog.Builder(requireContext())
+                                .setTitle("Check for Updates")
+                                .setMessage("You are running the latest version of Volt (v" + BuildConfig.VERSION_NAME + "). All systems are up to date!")
+                                .setPositiveButton("OK", null)
+                                .show();
+                        }
+                    } else {
+                        new AlertDialog.Builder(requireContext())
+                            .setTitle("Check for Updates")
+                            .setMessage("You are running the latest version of Volt (v" + BuildConfig.VERSION_NAME + "). All systems are up to date!")
+                            .setPositiveButton("OK", null)
+                            .show();
+                    }
+                });
+            });
+        }
+
+        if (btnAboutApp != null) {
+            btnAboutApp.setOnClickListener(v -> {
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("About Volt")
+                        .setMessage("Volt v" + BuildConfig.VERSION_NAME + " (Build " + BuildConfig.VERSION_CODE + ")\n\nSmart Home Energy Monitoring & Appliance Automation Platform.\n\n• Real-time voltage & power telemetry\n• Liquid glassmorphic navigation\n• Firebase Cloud Sync & Secure Authentication\n\nDeveloped for Advanced Android Environments.")
+                        .setPositiveButton("Close", null)
+                        .show();
+            });
         }
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
@@ -233,7 +347,16 @@ public class HomeFragment extends Fragment {
         }
 
         if (tvPanelUsername != null) tvPanelUsername.setText(username);
+        if (etPanelUsername != null) etPanelUsername.setText(username);
         if (tvPanelEmail != null) tvPanelEmail.setText(email.isEmpty() ? "user@example.com" : email);
+
+        int opacity = prefs.getInt("nav_opacity", 85);
+        if (sbNavOpacity != null) sbNavOpacity.setProgress(opacity);
+        if (tvNavOpacityVal != null) tvNavOpacityVal.setText(opacity + "%");
+
+        if (tvAppVersionCode != null) {
+            tvAppVersionCode.setText(String.format("v%s (Build %d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
+        }
 
         if (etRelay1Name != null) etRelay1Name.setText(prefs.getString("relay1_name", "AC Unit"));
         if (etRelay2Name != null) etRelay2Name.setText(prefs.getString("relay2_name", "Fridge"));
@@ -261,9 +384,20 @@ public class HomeFragment extends Fragment {
             }
         } else if ("uri".equals(type) && !value.isEmpty()) {
             try {
-                selectedImageUri = Uri.parse(value);
-                if (ivPanelProfilePic != null) {
-                    ivPanelProfilePic.setImageURI(selectedImageUri);
+                if (value.startsWith("data:image/")) {
+                    String base64Data = value.substring(value.indexOf(",") + 1);
+                    byte[] decodedBytes = Base64.decode(base64Data, Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                    if (bitmap != null && ivPanelProfilePic != null) {
+                        ivPanelProfilePic.setImageBitmap(bitmap);
+                    } else if (ivPanelProfilePic != null) {
+                        ivPanelProfilePic.setImageResource(R.drawable.circle_inner);
+                    }
+                } else {
+                    selectedImageUri = Uri.parse(value);
+                    if (ivPanelProfilePic != null) {
+                        ivPanelProfilePic.setImageURI(selectedImageUri);
+                    }
                 }
             } catch (Exception e) {
                 if (ivPanelProfilePic != null) {
@@ -304,6 +438,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void saveProfileAndRelayChanges() {
+        String newUsername = etPanelUsername != null ? etPanelUsername.getText().toString().trim() : "";
         String r1 = etRelay1Name != null ? etRelay1Name.getText().toString().trim() : "";
         String r2 = etRelay2Name != null ? etRelay2Name.getText().toString().trim() : "";
         String r3 = etRelay3Name != null ? etRelay3Name.getText().toString().trim() : "";
@@ -316,24 +451,95 @@ public class HomeFragment extends Fragment {
 
         SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
+
         editor.putString("relay1_name", r1);
         editor.putString("relay2_name", r2);
         editor.putString("relay3_name", r3);
         editor.putString("relay4_name", r4);
 
+        String photoUriStr = "";
+        String imgType = prefs.getString("profile_image_type", "avatar");
+        String imgVal = prefs.getString("profile_image_value", "ic_avatar_1");
+
         if (!selectedAvatar.isEmpty()) {
+            photoUriStr = "avatar://" + selectedAvatar;
+            imgType = "avatar";
+            imgVal = selectedAvatar;
             editor.putString("profile_image_type", "avatar");
             editor.putString("profile_image_value", selectedAvatar);
         } else if (selectedImageUri != null) {
-            editor.putString("profile_image_type", "uri");
-            editor.putString("profile_image_value", selectedImageUri.toString());
+            try {
+                ImageDecoder.Source source = ImageDecoder.createSource(requireActivity().getContentResolver(), selectedImageUri);
+                Bitmap bitmap = ImageDecoder.decodeBitmap(source);
+                Bitmap resized = scaleBitmap(bitmap, 300);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                resized.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+                String base64 = "data:image/jpeg;base64," + Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+                photoUriStr = base64;
+                imgType = "uri";
+                imgVal = base64;
+                editor.putString("profile_image_type", "uri");
+                editor.putString("profile_image_value", base64);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+        if (!newUsername.isEmpty()) {
+            editor.putString("username", newUsername);
+            if (tvPanelUsername != null) tvPanelUsername.setText(newUsername);
+        }
+
         editor.apply();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            UserProfileChangeRequest.Builder profileBuilder = new UserProfileChangeRequest.Builder();
+            if (!newUsername.isEmpty()) {
+                profileBuilder.setDisplayName(newUsername);
+            }
+            if (!photoUriStr.isEmpty()) {
+                profileBuilder.setPhotoUri(Uri.parse(photoUriStr));
+            }
+
+            String finalImgType = imgType;
+            String finalImgVal = imgVal;
+            String finalUsername = newUsername.isEmpty() ? prefs.getString("username", "User") : newUsername;
+
+            user.updateProfile(profileBuilder.build()).addOnCompleteListener(task -> {
+                String uid = user.getUid();
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+                Map<String, Object> map = new HashMap<>();
+                map.put("username", finalUsername);
+                map.put("email", user.getEmail() != null ? user.getEmail() : "");
+                map.put("profile_image_type", finalImgType);
+                map.put("profile_image_value", finalImgVal);
+                userRef.updateChildren(map);
+            });
+        }
 
         loadProfilePicture();
         loadCustomApplianceNames();
+        if (getView() != null) {
+            setupUserGreeting(getView());
+        }
         closeSidePanel();
         Toast.makeText(requireContext(), R.string.profile_updated, Toast.LENGTH_SHORT).show();
+    }
+
+    private Bitmap scaleBitmap(Bitmap bitmap, int maxDimension) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        if (width <= maxDimension && height <= maxDimension) return bitmap;
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxDimension;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxDimension;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(bitmap, width, height, true);
     }
 
     private void loadCustomApplianceNames() {
@@ -366,12 +572,26 @@ public class HomeFragment extends Fragment {
         if ("avatar".equals(type)) {
             int resId = getResources().getIdentifier(value, "drawable", requireActivity().getPackageName());
             if (resId != 0) ivProfile.setImageResource(resId);
+            else ivProfile.setImageResource(R.drawable.circle_inner);
         } else if ("uri".equals(type) && !value.isEmpty()) {
             try {
-                ivProfile.setImageURI(Uri.parse(value));
+                if (value.startsWith("data:image/")) {
+                    String base64Data = value.substring(value.indexOf(",") + 1);
+                    byte[] decodedBytes = Base64.decode(base64Data, Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                    if (bitmap != null) {
+                        ivProfile.setImageBitmap(bitmap);
+                    } else {
+                        ivProfile.setImageResource(R.drawable.circle_inner);
+                    }
+                } else {
+                    ivProfile.setImageURI(Uri.parse(value));
+                }
             } catch (Exception e) {
                 ivProfile.setImageResource(R.drawable.circle_inner);
             }
+        } else {
+            ivProfile.setImageResource(R.drawable.circle_inner);
         }
     }
 
@@ -447,7 +667,7 @@ public class HomeFragment extends Fragment {
         if (sw != null) sw.setChecked(isOn);
         if (tv != null) {
             tv.setText(isOn ? R.string.status_on : R.string.status_off);
-            tv.setTextColor(isOn ? getResources().getColor(R.color.volt_teal) : 0xFFFF5252);
+            tv.setTextColor(isOn ? ContextCompat.getColor(requireContext(), R.color.volt_teal) : 0xFFFF5252);
         }
     }
 
@@ -496,6 +716,72 @@ public class HomeFragment extends Fragment {
         if (switchRelay1 != null && switchRelay1.isChecked()) onCount++;
         if (switchRelay2 != null && switchRelay2.isChecked()) onCount++;
         tvControlsSummary.setText(String.format(Locale.getDefault(), "%d ON · %d OFF", onCount, 2 - onCount));
+    }
+
+    @SuppressWarnings("deprecation")
+    private void downloadAndInstallApk(String urlStr, String versionName) {
+        ProgressDialog downloadDialog = new ProgressDialog(requireContext());
+        downloadDialog.setMessage("Downloading update v" + versionName + "...");
+        downloadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        downloadDialog.setCancelable(false);
+        downloadDialog.show();
+
+        new Thread(() -> {
+            try {
+                URL url = new URL(urlStr);
+                HttpURLConnection c = (HttpURLConnection) url.openConnection();
+                c.setRequestMethod("GET");
+                c.setDoOutput(true);
+                c.connect();
+
+                int fileLength = c.getContentLength();
+                File outputFile = new File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "volt_v" + versionName + ".apk");
+                if (outputFile.exists()) outputFile.delete();
+
+                FileOutputStream fos = new FileOutputStream(outputFile);
+                InputStream is = c.getInputStream();
+
+                byte[] buffer = new byte[1024];
+                int total = 0;
+                int count;
+                while ((count = is.read(buffer)) != -1) {
+                    total += count;
+                    if (fileLength > 0) {
+                        int progress = (int) (total * 100 / fileLength);
+                        requireActivity().runOnUiThread(() -> downloadDialog.setProgress(progress));
+                    }
+                    fos.write(buffer, 0, count);
+                }
+                fos.close();
+                is.close();
+
+                requireActivity().runOnUiThread(() -> {
+                    downloadDialog.dismiss();
+                    installApk(outputFile);
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                requireActivity().runOnUiThread(() -> {
+                    downloadDialog.dismiss();
+                    Toast.makeText(requireContext(), "Download failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
+        }).start();
+    }
+
+    private void installApk(File file) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Uri apkUri = FileProvider.getUriForFile(requireContext(), requireContext().getPackageName() + ".fileprovider", file);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(requireContext(), "Installation failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private String getGreeting() {

@@ -81,6 +81,8 @@
 
     <!-- Side Panel -->
     <string name="profile_settings_title">Profile &amp; Settings</string>
+    <string name="edit_account_info">EDIT ACCOUNT INFO</string>
+    <string name="hint_username">Enter your username</string>
     <string name="close_panel">Close Panel</string>
     <string name="profile_picture">Profile Picture</string>
     <string name="edit_profile_picture">EDIT PROFILE PICTURE</string>

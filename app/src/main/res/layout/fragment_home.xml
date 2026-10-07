@@ -464,6 +464,43 @@
                 android:layout_marginVertical="20dp"
                 android:background="#1E3533" />
 
+            <!-- Edit Account Info -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.08"
+                android:text="@string/edit_account_info"
+                android:textColor="#4A7070"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/username"
+                android:textColor="#7AABAA"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/etPanelUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_input_field"
+                android:hint="@string/hint_username"
+                android:inputType="textPersonName"
+                android:padding="12dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#4A7070"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="20dp"
+                android:background="#1E3533" />
+
             <!-- Edit Device Names according to Relay Nos -->
             <TextView
                 android:layout_width="wrap_content"
@@ -561,6 +598,151 @@
                 android:textColor="#FFFFFF"
                 android:textColorHint="#4A7070"
                 android:textSize="14sp" />
+
+            <!-- Nav Bar Transparency -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="20dp"
+                android:background="#1E3533" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.08"
+                android:text="NAV BAR TRANSPARENCY"
+                android:textColor="#4A7070"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Glass Opacity"
+                    android:textColor="#7AABAA"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvNavOpacityVal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="85%"
+                    android:textColor="#00E5CC"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/sbNavOpacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:max="100"
+                android:min="10"
+                android:progress="85"
+                android:progressTint="#00E5CC"
+                android:thumbTint="#00E5CC" />
+
+            <!-- App Information & Updates -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="20dp"
+                android:background="#1E3533" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.08"
+                android:text="APP INFORMATION &amp; UPDATES"
+                android:textColor="#4A7070"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_glass_card"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_bolt"
+                    app:tint="#00E5CC"
+                    android:contentDescription="Volt icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Volt App Version"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvAppVersionCode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="v1.0.3 (Build 4)"
+                        android:textColor="#7AABAA"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_period_active"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:text="LATEST"
+                    android:textColor="#00E5CC"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCheckUpdates"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="12dp"
+                android:text="Check for Updates"
+                android:textColor="#00E5CC"
+                android:textSize="13sp"
+                app:strokeColor="#00E5CC"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAboutApp"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:text="About Volt App"
+                android:textColor="#7AABAA"
+                android:textSize="13sp"
+                app:strokeColor="#1E3533"
+                app:strokeWidth="1dp" />
 
             <!-- Save Button -->
             <com.google.android.material.button.MaterialButton

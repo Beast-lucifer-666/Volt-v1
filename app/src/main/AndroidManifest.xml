@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:installLocation="auto">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
@@ -8,6 +9,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="false"
@@ -30,19 +33,34 @@
         </service>
 
         <activity
-            android:name=".feature.login.LoginActivity"
+            android:name=".SplashActivity"
             android:exported="true"
-            android:windowLayoutInDisplayCutoutMode="never" >
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowLayoutInDisplayCutoutMode="never">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".feature.login.LoginActivity"
+            android:exported="true"
+            android:windowLayoutInDisplayCutoutMode="never" />
         <activity android:name=".feature.login.RegisterActivity" />
         <activity android:name=".feature.dashboard.DashboardActivity" />
         <activity android:name=".feature.login.SetupActivity" />
         <activity android:name=".feature.login.ForgotPasswordActivity" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

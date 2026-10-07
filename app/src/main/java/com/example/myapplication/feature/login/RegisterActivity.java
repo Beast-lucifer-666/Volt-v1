@@ -2,8 +2,11 @@ package com.example.myapplication.feature.login;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -21,6 +24,12 @@ import com.example.myapplication.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -118,18 +127,54 @@ public class RegisterActivity extends AppCompatActivity {
                                 }
                             });
 
-                        // 2. Update Profile with Username
+                        // 2. Update Profile with Username and Photo (Convert custom photo to Base64 to persist across reinstalls)
+                        String photoUriStr = "";
+                        String imgType = "avatar";
+                        String imgVal = "ic_avatar_1";
+
+                        if (!selectedAvatarResource.isEmpty()) {
+                            photoUriStr = "avatar://" + selectedAvatarResource;
+                            imgType = "avatar";
+                            imgVal = selectedAvatarResource;
+                        } else if (selectedImageUri != null) {
+                            try {
+                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                                Bitmap resized = scaleBitmap(bitmap, 300);
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                resized.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+                                String base64 = "data:image/jpeg;base64," + Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+                                photoUriStr = base64;
+                                imgType = "uri";
+                                imgVal = base64;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                 .setDisplayName(username)
+                                .setPhotoUri(photoUriStr.isEmpty() ? null : Uri.parse(photoUriStr))
                                 .build();
-                        user.updateProfile(profileUpdates);
 
-                        // 3. Save local preferences (marked as not verified yet)
-                        saveUserToPrefs(username, email);
-                        
-                        // 4. Navigate to Login (they must verify before using app)
-                        Toast.makeText(RegisterActivity.this, "Account created! Please verify your email before logging in.", Toast.LENGTH_LONG).show();
-                        finish();
+                        String finalImgType = imgType;
+                        String finalImgVal = imgVal;
+                        user.updateProfile(profileUpdates).addOnCompleteListener(updateTask -> {
+                            // 3. Save to Firebase Realtime Database so profile survives app re-install and re-login
+                            String uid = user.getUid();
+                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("username", username);
+                            map.put("email", email);
+                            map.put("profile_image_type", finalImgType);
+                            map.put("profile_image_value", finalImgVal);
+                            userRef.setValue(map);
+
+                            // 4. Save local preferences
+                            saveUserToPrefs(username, email, finalImgType, finalImgVal);
+
+                            Toast.makeText(RegisterActivity.this, "Account created! Please verify your email before logging in.", Toast.LENGTH_LONG).show();
+                            finish();
+                        });
                     }
                 } else {
                     String error = task.getException() != null ? task.getException().getMessage() : "Unknown error";
@@ -141,20 +186,29 @@ public class RegisterActivity extends AppCompatActivity {
             });
     }
 
-    private void saveUserToPrefs(String username, String email) {
+    private Bitmap scaleBitmap(Bitmap bitmap, int maxDimension) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        if (width <= maxDimension && height <= maxDimension) return bitmap;
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxDimension;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxDimension;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(bitmap, width, height, true);
+    }
+
+    private void saveUserToPrefs(String username, String email, String imgType, String imgVal) {
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("username", username);
         editor.putString("email", email);
         editor.putBoolean("isLoggedIn", true);
-        
-        if (!selectedAvatarResource.isEmpty()) {
-            editor.putString("profile_image_type", "avatar");
-            editor.putString("profile_image_value", selectedAvatarResource);
-        } else if (selectedImageUri != null) {
-            editor.putString("profile_image_type", "uri");
-            editor.putString("profile_image_value", selectedImageUri.toString());
-        }
+        editor.putString("profile_image_type", imgType);
+        editor.putString("profile_image_value", imgVal);
         editor.apply();
     }
 

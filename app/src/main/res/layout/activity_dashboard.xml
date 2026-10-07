@@ -7,23 +7,27 @@
     android:layout_height="match_parent"
     android:background="#060E0D">
 
-    <!-- Navigation Container for Glass Effect -->
+    <!-- Fragment Container with padding above floating nav bar -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation_container"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- True Floating Liquid Glass Dock Container -->
     <FrameLayout
         android:id="@+id/bottom_navigation_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="24dp"
         android:background="@drawable/bg_glass_nav"
-        android:padding="4dp"
+        android:clipToOutline="true"
+        android:elevation="16dp"
+        android:padding="6dp"
+        tools:targetApi="s"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -34,9 +38,12 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             app:elevation="0dp"
-            app:itemIconTint="#7AABAA"
-            app:itemTextColor="#7AABAA"
-            app:itemActiveIndicatorStyle="@style/Widget.Material3.BottomNavigationView.ActiveIndicator"
+            app:itemIconSize="24dp"
+            app:itemIconTint="@color/bottom_nav_color_state"
+            app:itemTextColor="@color/bottom_nav_color_state"
+            app:itemActiveIndicatorStyle="@null"
+            app:itemBackground="@drawable/bg_nav_item_ripple"
+            app:itemRippleColor="#4000E5CC"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_nav_menu" />
     </FrameLayout>

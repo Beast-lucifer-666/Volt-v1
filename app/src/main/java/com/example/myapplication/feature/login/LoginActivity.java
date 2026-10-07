@@ -28,6 +28,10 @@ import com.example.myapplication.MonitoringService;
 import com.example.myapplication.feature.dashboard.DashboardActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
@@ -115,16 +119,47 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {
-                                // REMOVED: isEmailVerified() check to allow immediate testing
-                                sharedPreferences.edit()
-                                    .putBoolean("isLoggedIn", true)
-                                    .putString("email", email)
-                                    .putString("username", user.getDisplayName())
-                                    .apply();
-                                
-                                startMonitoringService();
-                                Toast.makeText(this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
-                                navigateToNextScreen(sharedPreferences);
+                                String uid = user.getUid();
+                                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+                                userRef.get().addOnCompleteListener(dbTask -> {
+                                    String username = user.getDisplayName() != null ? user.getDisplayName() : "User";
+                                    String avatarType = "avatar";
+                                    String avatarVal = "ic_avatar_1";
+
+                                    if (dbTask.isSuccessful() && dbTask.getResult().exists()) {
+                                        DataSnapshot snap = dbTask.getResult();
+                                        if (snap.child("username").getValue(String.class) != null) {
+                                            username = snap.child("username").getValue(String.class);
+                                        }
+                                        String profileType = snap.child("profile_image_type").getValue(String.class);
+                                        String profileVal = snap.child("profile_image_value").getValue(String.class);
+                                        if (profileType != null && !profileType.isEmpty()) {
+                                            avatarType = profileType;
+                                            avatarVal = profileVal != null ? profileVal : "";
+                                        }
+                                    } else {
+                                        String photoUri = user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "";
+                                        if (photoUri.startsWith("avatar://")) {
+                                            avatarType = "avatar";
+                                            avatarVal = photoUri.replace("avatar://", "");
+                                        } else if (!photoUri.isEmpty()) {
+                                            avatarType = "uri";
+                                            avatarVal = photoUri;
+                                        }
+                                    }
+
+                                    sharedPreferences.edit()
+                                        .putBoolean("isLoggedIn", true)
+                                        .putString("email", email)
+                                        .putString("username", username)
+                                        .putString("profile_image_type", avatarType)
+                                        .putString("profile_image_value", avatarVal)
+                                        .apply();
+
+                                    startMonitoringService();
+                                    Toast.makeText(this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
+                                    navigateToNextScreen(sharedPreferences);
+                                });
                             }
                         }
 else {
