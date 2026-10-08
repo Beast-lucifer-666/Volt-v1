@@ -37,7 +37,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -202,6 +205,32 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupSidePanel() {
+        if (drawerLayout != null) {
+            drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                @Override
+                public void onDrawerSlide(View drawerView, float slideOffset) {
+                    if (getActivity() == null) return;
+                    View fragContainer = getActivity().findViewById(R.id.fragment_container);
+                    if (fragContainer != null) {
+                        if (slideOffset > 0) {
+                            fragContainer.setTranslationZ(20f * getResources().getDisplayMetrics().density);
+                        } else {
+                            fragContainer.setTranslationZ(0f);
+                        }
+                    }
+                }
+
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    if (getActivity() == null) return;
+                    View fragContainer = getActivity().findViewById(R.id.fragment_container);
+                    if (fragContainer != null) {
+                        fragContainer.setTranslationZ(0f);
+                    }
+                }
+            });
+        }
+
         if (ivProfile != null) {
             ivProfile.setOnClickListener(v -> openSidePanel());
         }

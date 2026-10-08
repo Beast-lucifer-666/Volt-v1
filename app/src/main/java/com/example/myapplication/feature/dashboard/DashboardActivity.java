@@ -3,10 +3,15 @@ package com.example.myapplication.feature.dashboard;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import com.example.myapplication.R;
 import com.example.myapplication.feature.analytics.AnalyticsFragment;
@@ -25,9 +30,25 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().setNavigationBarContrastEnforced(false);
+
         setContentView(R.layout.activity_dashboard);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        View navContainer = findViewById(R.id.bottom_navigation_container);
+
+        if (navContainer != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(navContainer, (v, insets) -> {
+                Insets navBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+                int baseMarginBottom = (int) (24 * getResources().getDisplayMetrics().density);
+                params.bottomMargin = baseMarginBottom + navBarInsets.bottom;
+                v.setLayoutParams(params);
+                return insets;
+            });
+        }
 
         // Load saved navigation bar opacity
         SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
