@@ -21,7 +21,7 @@
     <string name="greeting_evening">Good Evening 🌙</string>
     <string name="home_title_format">%1$s\'s Home</string>
     <string name="whole_home_live">• WHOLE HOME · LIVE</string>
-    <string name="kw_label">kilowatts total right now</string>
+    <string name="kw_label">watts total right now</string>
     <string name="voltage">Voltage</string>
     <string name="current">Current</string>
     <string name="energy_today">Energy Today</string>

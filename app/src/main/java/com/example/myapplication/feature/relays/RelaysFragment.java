@@ -105,7 +105,7 @@ public class RelaysFragment extends Fragment {
             updateStatus(tvStatusRelay4, switchRelay4, isOn);
         });
         viewModel.getCurrentPower().observe(getViewLifecycleOwner(), power -> 
-            tvLiveWatts.setText(String.format(Locale.getDefault(), "%.1fkW", power))
+            tvLiveWatts.setText(String.format(Locale.getDefault(), "%.1fW", power))
         );
     }
 
