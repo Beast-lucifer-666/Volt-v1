@@ -280,18 +280,8 @@ public class HomeFragment extends Fragment {
                         reader.close();
 
                         JSONObject json = new JSONObject(sb.toString());
-                        String tagName = json.optString("tag_name", "v1.0.0"); // e.g. "v1.0.46" or "1.0.46"
+                        String tagName = json.optString("tag_name", "1.0.0"); // e.g. "v1.0.51" or "1.0.51"
                         String cleanTagName = tagName.replaceAll("[^0-9.]", "");
-                        
-                        String[] parts = cleanTagName.split("\\.");
-                        int remoteCode = 0;
-                        if (parts.length >= 3) {
-                            try {
-                                remoteCode = Integer.parseInt(parts[2]) + Integer.parseInt(parts[1]) * 100 + Integer.parseInt(parts[0]) * 10000;
-                            } catch (Exception ignored) {}
-                        } else if (parts.length == 1 && !parts[0].isEmpty()) {
-                            try { remoteCode = Integer.parseInt(parts[0]); } catch (Exception ignored) {}
-                        }
 
                         String apkUrl = "";
                         JSONArray assets = json.optJSONArray("assets");
@@ -310,14 +300,13 @@ public class HomeFragment extends Fragment {
                             apkUrl = json.optString("html_url", "https://github.com/Beast-lucifer-666/Volt-v1/releases");
                         }
 
-                        final int finalRemoteCode = remoteCode > 0 ? remoteCode : BuildConfig.VERSION_CODE;
                         final String finalRemoteName = cleanTagName.isEmpty() ? "Latest" : cleanTagName;
                         final String finalApkUrl = apkUrl;
-                        final boolean isRemoteZero = (remoteCode == 0);
+                        final boolean hasNewerVersion = isVersionNewer(cleanTagName, BuildConfig.VERSION_NAME);
 
                         requireActivity().runOnUiThread(() -> {
                             progressDialog.dismiss();
-                            if (finalRemoteCode > BuildConfig.VERSION_CODE || (isRemoteZero && !finalRemoteName.equals(BuildConfig.VERSION_NAME))) {
+                            if (hasNewerVersion) {
                                 new AlertDialog.Builder(requireContext())
                                     .setTitle("Update Available (v" + finalRemoteName + ")")
                                     .setMessage("A new version of Volt (v" + finalRemoteName + ") is available on GitHub Releases. Current version is v" + BuildConfig.VERSION_NAME + ".\n\nWould you like to open the release page or download it?")
@@ -853,6 +842,20 @@ public class HomeFragment extends Fragment {
 
     private int dpToPx(int dp) {
         return (int) (dp * getResources().getDisplayMetrics().density);
+    }
+
+    private boolean isVersionNewer(String remoteVer, String currentVer) {
+        if (remoteVer == null || currentVer == null || remoteVer.isEmpty() || currentVer.isEmpty()) return false;
+        String[] rParts = remoteVer.replaceAll("[^0-9.]", "").split("\\.");
+        String[] cParts = currentVer.replaceAll("[^0-9.]", "").split("\\.");
+        int length = Math.max(rParts.length, cParts.length);
+        for (int i = 0; i < length; i++) {
+            int rVal = (i < rParts.length && !rParts[i].isEmpty()) ? Integer.parseInt(rParts[i]) : 0;
+            int cVal = (i < cParts.length && !cParts[i].isEmpty()) ? Integer.parseInt(cParts[i]) : 0;
+            if (rVal > cVal) return true;
+            if (rVal < cVal) return false;
+        }
+        return false;
     }
 
     public static class LiveGraphView extends View {

@@ -40,7 +40,7 @@ fun getOrIncrementVersion(): Pair<Int, String> {
         }
     }
 
-    return Pair(code, "v$major.$minor.$patch")
+    return Pair(code, "$major.$minor.$patch")
 }
 
 val (appVersionCode, appVersionName) = getOrIncrementVersion()
