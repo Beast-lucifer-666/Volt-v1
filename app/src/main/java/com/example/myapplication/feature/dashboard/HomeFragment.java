@@ -52,10 +52,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -63,6 +65,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.Map;
 
 public class HomeFragment extends Fragment {
@@ -256,42 +262,96 @@ public class HomeFragment extends Fragment {
                 progressDialog.setCancelable(false);
                 progressDialog.show();
 
-                DatabaseReference versionRef = FirebaseDatabase.getInstance().getReference("app_version");
-                versionRef.get().addOnCompleteListener(task -> {
-                    progressDialog.dismiss();
-                    if (task.isSuccessful() && task.getResult().exists()) {
-                        DataSnapshot snap = task.getResult();
-                        Long remoteCodeLong = snap.child("version_code").getValue(Long.class);
-                        String remoteName = snap.child("version_name").getValue(String.class);
-                        String apkUrl = snap.child("apk_url").getValue(String.class);
+                new Thread(() -> {
+                    try {
+                        URL url = new URL("https://api.github.com/repos/Beast-lucifer-666/Volt-v1/releases/latest");
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("GET");
+                        conn.setRequestProperty("Accept", "application/vnd.github.v3+json");
+                        conn.setConnectTimeout(5000);
+                        conn.setReadTimeout(5000);
 
-                        int remoteCode = remoteCodeLong != null ? remoteCodeLong.intValue() : BuildConfig.VERSION_CODE;
-                        final String finalRemoteName = remoteName != null ? remoteName : "1.0.40";
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        StringBuilder sb = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            sb.append(line);
+                        }
+                        reader.close();
 
-                        if (remoteCode > BuildConfig.VERSION_CODE && apkUrl != null && !apkUrl.isEmpty()) {
+                        JSONObject json = new JSONObject(sb.toString());
+                        String tagName = json.optString("tag_name", "v1.0.0"); // e.g. "v1.0.46" or "1.0.46"
+                        String cleanTagName = tagName.replaceAll("[^0-9.]", "");
+                        
+                        String[] parts = cleanTagName.split("\\.");
+                        int remoteCode = 0;
+                        if (parts.length >= 3) {
+                            try {
+                                remoteCode = Integer.parseInt(parts[2]) + Integer.parseInt(parts[1]) * 100 + Integer.parseInt(parts[0]) * 10000;
+                            } catch (Exception ignored) {}
+                        } else if (parts.length == 1 && !parts[0].isEmpty()) {
+                            try { remoteCode = Integer.parseInt(parts[0]); } catch (Exception ignored) {}
+                        }
+
+                        String apkUrl = "";
+                        JSONArray assets = json.optJSONArray("assets");
+                        if (assets != null) {
+                            for (int i = 0; i < assets.length(); i++) {
+                                JSONObject asset = assets.getJSONObject(i);
+                                String name = asset.optString("name", "");
+                                if (name.endsWith(".apk")) {
+                                    apkUrl = asset.optString("browser_download_url", "");
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (apkUrl.isEmpty()) {
+                            apkUrl = json.optString("html_url", "https://github.com/Beast-lucifer-666/Volt-v1/releases");
+                        }
+
+                        final int finalRemoteCode = remoteCode > 0 ? remoteCode : BuildConfig.VERSION_CODE;
+                        final String finalRemoteName = cleanTagName.isEmpty() ? "Latest" : cleanTagName;
+                        final String finalApkUrl = apkUrl;
+                        final boolean isRemoteZero = (remoteCode == 0);
+
+                        requireActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            if (finalRemoteCode > BuildConfig.VERSION_CODE || (isRemoteZero && !finalRemoteName.equals(BuildConfig.VERSION_NAME))) {
+                                new AlertDialog.Builder(requireContext())
+                                    .setTitle("Update Available (v" + finalRemoteName + ")")
+                                    .setMessage("A new version of Volt (v" + finalRemoteName + ") is available on GitHub Releases. Current version is v" + BuildConfig.VERSION_NAME + ".\n\nWould you like to open the release page or download it?")
+                                    .setPositiveButton("Download / View", (dialog, which) -> {
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(finalApkUrl));
+                                        startActivity(intent);
+                                    })
+                                    .setNegativeButton("Cancel", null)
+                                    .show();
+                            } else {
+                                new AlertDialog.Builder(requireContext())
+                                    .setTitle("Check for Updates")
+                                    .setMessage("You are running the latest version of Volt (v" + BuildConfig.VERSION_NAME + "). All systems are up to date!")
+                                    .setPositiveButton("OK", null)
+                                    .show();
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        requireActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
                             new AlertDialog.Builder(requireContext())
-                                .setTitle("Update Available (v" + finalRemoteName + ")")
-                                .setMessage("A new version of Volt (v" + finalRemoteName + ") is available. Current version is v" + BuildConfig.VERSION_NAME + " (Build " + BuildConfig.VERSION_CODE + ").\n\nWould you like to download and install it now?")
-                                .setPositiveButton("Download & Install", (dialog, which) -> {
-                                    downloadAndInstallApk(apkUrl, finalRemoteName);
+                                .setTitle("Check for Updates")
+                                .setMessage("Could not connect to GitHub Releases. Would you like to open the releases page directly?")
+                                .setPositiveButton("Open GitHub", (dialog, which) -> {
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Beast-lucifer-666/Volt-v1/releases"));
+                                    startActivity(intent);
                                 })
                                 .setNegativeButton("Cancel", null)
                                 .show();
-                        } else {
-                            new AlertDialog.Builder(requireContext())
-                                .setTitle("Check for Updates")
-                                .setMessage("You are running the latest version of Volt (v" + BuildConfig.VERSION_NAME + "). All systems are up to date!")
-                                .setPositiveButton("OK", null)
-                                .show();
-                        }
-                    } else {
-                        new AlertDialog.Builder(requireContext())
-                            .setTitle("Check for Updates")
-                            .setMessage("You are running the latest version of Volt (v" + BuildConfig.VERSION_NAME + "). All systems are up to date!")
-                            .setPositiveButton("OK", null)
-                            .show();
+                        });
                     }
-                });
+                }).start();
             });
         }
 
