@@ -19,7 +19,6 @@ import com.example.myapplication.feature.alerts.AlertsFragment;
 import com.example.myapplication.feature.relays.RelaysFragment;
 import com.example.myapplication.MonitoringService;
 import com.example.myapplication.feature.login.LoginActivity;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class DashboardActivity extends AppCompatActivity {
@@ -36,14 +35,14 @@ public class DashboardActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_dashboard);
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        CustomFloatingNavBar bottomNav = findViewById(R.id.bottom_navigation);
         View navContainer = findViewById(R.id.bottom_navigation_container);
 
         if (navContainer != null) {
             ViewCompat.setOnApplyWindowInsetsListener(navContainer, (v, insets) -> {
                 Insets navBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
                 ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-                int baseMarginBottom = (int) (24 * getResources().getDisplayMetrics().density);
+                int baseMarginBottom = (int) (12 * getResources().getDisplayMetrics().density);
                 params.bottomMargin = baseMarginBottom + navBarInsets.bottom;
                 v.setLayoutParams(params);
                 return insets;
@@ -59,41 +58,51 @@ public class DashboardActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new HomeFragment())
                     .commit();
+
+            // Auto-check for updates on dashboard launch
+            UpdateManager.checkForUpdates(this, false, null);
         }
 
-        bottomNav.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
-            int currentIndex;
-            int itemId = item.getItemId();
+        if (bottomNav != null) {
+            bottomNav.setOnItemSelectedListener(itemId -> {
+                Fragment selectedFragment = null;
+                int currentIndex;
 
-            if (itemId == R.id.nav_home) {
-                selectedFragment = new HomeFragment();
-                currentIndex = 0;
-            } else if (itemId == R.id.nav_relays) {
-                selectedFragment = new RelaysFragment();
-                currentIndex = 1;
-            } else if (itemId == R.id.nav_analytics) {
-                selectedFragment = new AnalyticsFragment();
-                currentIndex = 2;
-            } else {
-                selectedFragment = new AlertsFragment();
-                currentIndex = 3;
-            }
-
-            if (selectedFragment != null) {
-                var transaction = getSupportFragmentManager().beginTransaction();
-                if (currentIndex > previousTabIndex) {
-                    transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-                } else if (currentIndex < previousTabIndex) {
-                    transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+                if (itemId == R.id.nav_home) {
+                    selectedFragment = new HomeFragment();
+                    currentIndex = 0;
+                } else if (itemId == R.id.nav_relays) {
+                    selectedFragment = new RelaysFragment();
+                    currentIndex = 1;
+                } else if (itemId == R.id.nav_analytics) {
+                    selectedFragment = new AnalyticsFragment();
+                    currentIndex = 2;
                 } else {
-                    transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                    selectedFragment = new AlertsFragment();
+                    currentIndex = 3;
                 }
-                previousTabIndex = currentIndex;
-                transaction.replace(R.id.fragment_container, selectedFragment).commit();
-            }
-            return true;
-        });
+
+                if (selectedFragment != null) {
+                    var transaction = getSupportFragmentManager().beginTransaction();
+                    if (currentIndex > previousTabIndex) {
+                        transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                    } else if (currentIndex < previousTabIndex) {
+                        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+                    } else {
+                        transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                    }
+                    previousTabIndex = currentIndex;
+                    transaction.replace(R.id.fragment_container, selectedFragment).commit();
+                }
+                return true;
+            });
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        UpdateManager.checkPendingInstall(this);
     }
 
     public void updateNavOpacity(int opacityPercent) {

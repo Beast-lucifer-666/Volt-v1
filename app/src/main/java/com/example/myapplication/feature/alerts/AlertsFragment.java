@@ -24,9 +24,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.myapplication.R;
+import com.example.myapplication.feature.dashboard.CustomFloatingNavBar;
 import com.example.myapplication.feature.dashboard.DashboardActivity;
-import com.example.myapplication.feature.relays.RelaysFragment;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.List;
 import java.util.Locale;
 
@@ -127,7 +126,7 @@ public class AlertsFragment extends Fragment {
 
             btnAction.setOnClickListener(v -> {
                 String action = alert.getActionText();
-                BottomNavigationView nav = getActivity().findViewById(R.id.bottom_navigation);
+                CustomFloatingNavBar nav = getActivity() != null ? getActivity().findViewById(R.id.bottom_navigation) : null;
                 if ("Kill All".equals(action)) {
                     viewModel.killAll();
                 } else if ("Turn off AC".equals(action)) {

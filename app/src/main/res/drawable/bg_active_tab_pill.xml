@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- Active Selection Pill with Volt Cyan accent -->
+    <solid android:color="#1A3835" />
+    <corners android:radius="100dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#00E5CC" />
+</shape>

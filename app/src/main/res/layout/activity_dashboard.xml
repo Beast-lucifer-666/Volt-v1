@@ -15,36 +15,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- True Floating Liquid Glass Dock Container -->
+    <!-- True Floating Capsule Dock Container -->
     <FrameLayout
         android:id="@+id/bottom_navigation_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/bg_glass_nav"
-        android:clipToOutline="true"
+        android:layout_marginHorizontal="14dp"
+        android:layout_marginBottom="12dp"
         android:elevation="16dp"
-        android:padding="6dp"
-        tools:targetApi="s"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
+        <com.example.myapplication.feature.dashboard.CustomFloatingNavBar
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:elevation="0dp"
-            app:itemIconSize="24dp"
-            app:itemIconTint="@color/bottom_nav_color_state"
-            app:itemTextColor="@color/bottom_nav_color_state"
-            app:itemActiveIndicatorStyle="@null"
-            app:itemBackground="@drawable/bg_nav_item_ripple"
-            app:itemRippleColor="#4000E5CC"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_nav_menu" />
+            android:layout_height="wrap_content" />
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
