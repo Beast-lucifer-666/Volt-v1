@@ -25,7 +25,7 @@ jobs:
 
     - name: Create Dummy Google Services JSON
       run: |
-        echo '{"project_info":{"project_number":"12345","project_id":"volt-dummy"},"client":[{"client_info":{"mobilesdk_app_id":"1:12345:android:12345","android_client_info":{"package_name":"com.example.myapplication"}},"api_key":[{"current_key":"dummy_key"}],"services":{"appinvite_service":{"status":2}}}]}' > app/google-services.json
+        echo '{"project_info":{"project_number":"12345","project_id":"volt-dummy"},"client":[{"client_info":{"mobilesdk_app_id":"1:12345:android:12345","android_client_info":{"package_name":"com.energy.volt"}},"api_key":[{"current_key":"dummy_key"}],"services":{"appinvite_service":{"status":2}}}]}' > app/google-services.json
 
     - name: Build with Gradle
       run: ./gradlew assembleDebug -x lint

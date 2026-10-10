@@ -214,6 +214,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:visibility="gone"
+            android:elevation="12dp"
+            android:indeterminateTint="#0A1A14"
+            app:layout_constraintTop_toTopOf="@id/btnSignIn"
+            app:layout_constraintBottom_toBottomOf="@id/btnSignIn"
+            app:layout_constraintStart_toStartOf="@id/btnSignIn"
+            app:layout_constraintEnd_toEndOf="@id/btnSignIn"/>
+
         <!-- ── REGISTER LINK ── -->
 
         <TextView

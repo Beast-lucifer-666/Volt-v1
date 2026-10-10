@@ -38,7 +38,7 @@ You can download the latest version of the Volt APK from the [Releases](https://
     Import the project as a Gradle project.
 3.  **Firebase Setup**:
     -   Create a project on the [Firebase Console](https://console.firebase.google.com/).
-    -   Add an Android app with the package name `com.example.myapplication`.
+    -   Add an Android app with the package name `com.energy.volt`.
     -   Download `google-services.json` and place it in the `app/` directory.
 4.  **Build and Run**:
     Click the "Run" button in Android Studio.

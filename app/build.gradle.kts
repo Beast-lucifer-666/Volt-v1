@@ -20,8 +20,8 @@ fun getOrIncrementVersion(): Pair<Int, String> {
         props["VERSION_CODE"] = "1"
     }
 
-    val major = props.getProperty("MAJOR_VERSION", "1").toInt()
-    val minor = props.getProperty("MINOR_VERSION", "0").toInt()
+    var major = props.getProperty("MAJOR_VERSION", "1").toInt()
+    var minor = props.getProperty("MINOR_VERSION", "0").toInt()
     var patch = props.getProperty("PATCH_VERSION", "0").toInt()
     var code = props.getProperty("VERSION_CODE", "1").toInt()
 
@@ -33,6 +33,18 @@ fun getOrIncrementVersion(): Pair<Int, String> {
     if (isBuildTaskRequested) {
         patch += 1
         code += 1
+
+        if (patch > 100) {
+            patch = 0
+            minor += 1
+            if (minor >= 100) {
+                minor = 0
+                major += 1
+            }
+        }
+
+        props["MAJOR_VERSION"] = major.toString()
+        props["MINOR_VERSION"] = minor.toString()
         props["PATCH_VERSION"] = patch.toString()
         props["VERSION_CODE"] = code.toString()
         FileOutputStream(versionPropertiesFile).use {
@@ -46,11 +58,11 @@ fun getOrIncrementVersion(): Pair<Int, String> {
 val (appVersionCode, appVersionName) = getOrIncrementVersion()
 
 android {
-    namespace = "com.example.myapplication"
+    namespace = "com.energy.volt"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
+        applicationId = "com.energy.volt"
         minSdk = 29
         targetSdk = 36
         versionCode = appVersionCode
